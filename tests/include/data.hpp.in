@@ -1,0 +1,9 @@
+#pragma once
+#include <string>
+
+namespace tests {
+const std::string TestTinyFastqFile = std::string("@ZamoreUmiSeq_TEST_DIR@/data/tiny.fq");
+const std::string TestTinyFastqFileGz = std::string("@ZamoreUmiSeq_TEST_DIR@/data/tiny.fq.gz");
+const std::string TestTinyBamFile = std::string("@ZamoreUmiSeq_TEST_DIR@/data/tiny.bam");
+const std::string TestPeBamFile = std::string("@ZamoreUmiSeq_TEST_DIR@/data/pe.bam");
+}
