@@ -26,6 +26,9 @@ script:
   - make -j 1
   - make test
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+  
 branches:
   only:
     - master
