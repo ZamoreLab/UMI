@@ -14,7 +14,6 @@ function PeBowtie2Alignment {
         --no-mixed \
         2> $Log \
     | samtools view -uS - -o $B \
-    && samtools index $B \
     || echo2 "Failed to perform bowtie2 alignment for $L and $R on $B" error
 }
 export -f PeBowtie2Alignment
