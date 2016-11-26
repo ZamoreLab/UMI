@@ -22,9 +22,6 @@ public:
 }
 
 TEST_F(BamDedupTest, ReaderInitialization) {
-    EXPECT_FALSE(deduper.IsInitiated());
-    EXPECT_TRUE(deduper.IsInitiated());
-    deduper.NextAligned();
     EXPECT_TRUE(deduper.IsInitiated());
 }
 
@@ -34,7 +31,7 @@ TEST_F(BamDedupTest, AlignedCount) {
         ++i;
         deduper.Write();
     }
-    EXPECT_EQ(i, 48385);
+    EXPECT_EQ(i, 49064);
 }
 
 int main(int argc, char **argv) {
