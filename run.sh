@@ -2,7 +2,7 @@
 
 set -e -o pipefail
 
-declare -xr PACKAGE_NAME="Zamore UMI Chip-Seq"
+declare -xr PACKAGE_NAME="Zamore UMI"
 
 declare CalledProgramName=$0
 
@@ -41,8 +41,6 @@ declare -x PATH="${ThisBin}":${PATH}
 . "$ThisBin"/color.sh
 . "$ThisBin"/function.sh
 
-
-
 # global usage
 function usage {
     local _yellow=$(echo -ne ${FONT_COLOR_YELLOW})
@@ -60,14 +58,11 @@ Version: ${EOFUNDERLINE}$PROG_VERSION${EOFRESET}
 
 It currently include the following modules:
 
-${_cyan}[chip-seq]
-    Run Chip-Seq analysis pipeline
+${_cyan}[chip]
+    Run Chip-Seq analysis for UMI libraries
 
-${_green}[_]
-    place holder
-
-${_yellow}[_]
-    place holder
+${_green}[rna]
+    Run RNA-seq analysis for UMI libraries
 
 ${_magenta}${EOFRESET}    
 
@@ -81,6 +76,8 @@ declare SubProgram=$(echo ${1} | tr '[A-Z]' '[a-z]')
 case $SubProgram in
     chip|c)
         shift && bash "$ThisBin"/modules/chipseq.sh "$@";;
+    # rna|r)
+    #     shift && bash "$ThisBin"/modules/rnaseq.sh "$@";;
     version|v) 
         echo $PROG_VERSION;;
     *)

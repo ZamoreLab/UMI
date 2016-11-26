@@ -36,6 +36,10 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
 # thread
 find_package(Threads)
 
+# boost
+find_package(Boost REQUIRED)
+include_directories(${BOOST_INCLUDE_DIRS})
+
 # load ZLIB for htslib, build one if not exist
 find_package(ZLIB)
 if(NOT ZLIB_FOUND)
@@ -53,14 +57,12 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
 add_subdirectory(${${PROJECT_NAME}_SRC_DIR})
 
 # tests
-#option(BUILD_TESTS "Build tests" ON)
-#if (BUILD_TESTS)
-#    message(STATUS "${Green}CMaking Tests${ColourReset}")
-#    enable_testing()
-#    add_subdirectory(${${PROJECT_NAME}_TEST_DIR})
-#endif ()
-enable_testing()
-add_subdirectory(${${PROJECT_NAME}_TEST_DIR})
+option(BUILD_TESTS "Build tests" ON)
+if (BUILD_TESTS)
+    message(STATUS "${Green}CMaking Tests${ColourReset}")
+    enable_testing()
+    add_subdirectory(${${PROJECT_NAME}_TEST_DIR})
+endif ()
 
 # install third-party binaries
 

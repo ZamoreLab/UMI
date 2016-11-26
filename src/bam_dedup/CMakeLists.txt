@@ -1,5 +1,6 @@
 add_executable(bam_dedup
         bam_dedup.cpp
+        bam_dedup_main.cpp
         )
 
 target_link_libraries(bam_dedup

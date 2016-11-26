@@ -25,6 +25,9 @@ fi
 
 declare -x FigureOut
 declare -x WorkingDir
+declare -x FqOutDir
+declare -x BamOutDir
+declare -x LogDir
 
 # required binaries, make sure they exist
 declare -a RequiredPrgrams=( \
@@ -58,8 +61,8 @@ ${REQUIRED}[ required ]
 ${OPTIONAL}[ optional ]
     -o      Output directory, default: $OUTPUT_DIR
     -c      Number of cores/CPU to use, default: $Threads
-    -L      Length of UMI on \1, default: $UMI_LEN1
-    -R      Length of UMI on \2, default: $UMI_LEN2
+    -M      Length of UMI on \1, default: $UMI_LEN1
+    -N      Length of UMI on \2, default: $UMI_LEN2
     -P      Length of UMI padding on \1, default: $UMI_PADDING1
     -Q      Length of UMI padding on \2, default: $UMI_PADDING1
 
@@ -72,7 +75,7 @@ EOF
 }
 
 # argument parse
-while getopts "hl:r:L:R:g:b:o:c:L:R:P:Q:D" OPTION; do
+while getopts "hl:r:L:R:g:b:o:c:M:N:P:Q:D" OPTION; do
     case $OPTION in
         h) # usage 
             usage && exit 0
@@ -111,10 +114,10 @@ while getopts "hl:r:L:R:g:b:o:c:L:R:P:Q:D" OPTION; do
         o) # output directory
             OutputDir=$(readlink -f "$OPTARG")
         ;;
-        L)
+        M)
             UMI_LEN1=$OPTARG
         ;;
-        R)
+        N)
             UMI_LEN2=$OPTARG
         ;;
         P)
@@ -170,51 +173,109 @@ OutputDir="$OutputDir"/$RunName
 mkdir -p "$OutputDir" || echo2 "Cannot create $OutputDir" error
 assertDirWritable "${OutputDir}"
 cd "${OutputDir}" || echo2 "Cannot create $OutputDir" error 
-FigureOutDir=$OutputDir/figures  && mkdir -p "$FigureOutDir"  || echo2 "Failed to create directory $FigureOutDir"  error
-WorkingDir=$OutputDir/jobs       && mkdir -p "$WorkingDir"    || echo2 "Failed to create directory $WorkingDir"    error
+FigureOutDir=$OutputDir/figures && mkdir -p "$FigureOutDir" || echo2 "Failed to create directory $FigureOutDir" error
+WorkingDir=$OutputDir/jobs && mkdir -p "$WorkingDir" || echo2 "Failed to create directory $WorkingDir" error
+FqOutDir=$OutputDir/fastq && mkdir -p "$FqOutDir" || echo2 "Failed to create directory $FqOutDir" error 
+BamOutDir=$OutputDir/bam && mkdir -p "$BamOutDir" || echo2 "Failed to create directory $BamOutDir" error 
+LogDir=$OutputDir/log && mkdir -p "$LogDir" || echo2 "Failed to create directory $LogDir" error 
 
 # aligning
 declare Fq1
 declare Fq2
-declare type
+declare Fq1Base
+declare Fq2Base
+declare Type
+declare Bam
+declare Log
+declare -a InputBams
+declare -a IpBams
 for i in $(seq 0 $(( $numOfRep - 1 )) ); do 
-
     Fq1=${InputFastq1[$i]}
-    Fq2=${InputFastq2[$i]}
-    type=input
-    echo2 "Aligning input replicate $i to the genome $GenomeFa" 
-    bowtie2 \
-        -1 $Fq1 \
-        -2 $Fq2 \
-        -x $BowtieIndex \
-        -5 $UMI_PADDING1 \
-        -p $CPU \
-        --very-sensitive \
-        --no-mixed \
-        2> bowtie.${i}.log \
-    | samtools view -uS - \
-    | samtools sort - \
-        -o ${type}.${i}.bam \
-    && samtools index ${type}.${i}.bam \
-    || echo2 "Failed to align $Fq1 and $Fq2 to $BowtieIndex" error 
+    Fq1Base=$(basename $Fq1)
+    Fq1Prefix=${Fq1Base%.f[aq]*}
+    FqClippedOut1=$FqOutDir/${Fq1Prefix}.clipped.fq
 
-    Fq1=${InputFastq1[$i]}
     Fq2=${InputFastq2[$i]}
-    type=IP
+    Fq2Base=$(basename $Fq2)
+    Fq2Prefix=${Fq2Base%.f[aq]*}
+    FqClippedOut2=$FqOutDir/${Fq2Prefix}.clipped.fq
+
+    # pre-process fq file
+    echo2 "Clipping UMI on ChIP-Seq Input $Fq1"
+    if [[ ! -s $FqClippedOut1 ]]; then
+        clip_umi -i "$Fq1" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut1 \
+        || echo2 "Failed to run clip_umi on $Fq1"
+    else
+        echo2 "$FqClippedOut1 has been generated previously" warning 
+    fi 
+
+    echo2 "Clipping UMI on ChIP-Seq Input $Fq2"
+    if [[ ! -s $FqClippedOut2 ]]; then
+        clip_umi -i "$Fq2" -l $UMI_LEN2 -p $UMI_PADDING2 -o $FqClippedOut2 \
+        || echo2 "Failed to run clip_umi on $Fq2"
+    else
+        echo2 "$FqClippedOut2 has been generated previously" warning 
+    fi 
+
+    Type=input
+    Bam=$BamOutDir/${Type}.${i}.bam
+    Log=$LogDir/bowtie2.${Type}.${i}.log
+    echo2 "Aligning input replicate $i to the genome $GenomeFa"
+    if [[ ! -s $Bam ]]; then 
+        PeBowtie2Alignment \
+            $FqClippedOut1 \
+            $FqClippedOut2 \
+            $BowtieIndex \
+            $Bam \
+            $Threads \
+            $Log
+    else
+        echo2 "Alignment to generate $Bam has been done previously" warning 
+    fi 
+    InputBams+=( $Bam )
+
+    # IP
+    Fq1=${IpFastq1[$i]}
+    Fq1Base=$(basename $Fq1)
+    Fq1Prefix=${Fq1Base%.f[aq]*}
+    FqClippedOut1=$FqOutDir/${Fq1Prefix}.clipped.fq
+
+    Fq2=${IpFastq2[$i]}
+    Fq2Base=$(basename $Fq2)
+    Fq2Prefix=${Fq2Base%.f[aq]*}
+    FqClippedOut2=$FqOutDir/${Fq2Prefix}.clipped.fq
+
+    # pre-process fq file
+    echo2 "Clipping UMI on ChIP-Seq IP $Fq1"
+    if [[ ! -s $FqClippedOut1 ]]; then
+        clip_umi -i "$Fq1" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut1 \
+        || echo2 "Failed to run clip_umi on $Fq1"
+    else
+        echo2 "$FqClippedOut1 has been generated previously" warning 
+    fi 
+
+    echo2 "Clipping UMI on ChIP-Seq IP $Fq2"
+    if [[ ! -s $FqClippedOut2 ]]; then
+        clip_umi -i "$Fq2" -l $UMI_LEN2 -p $UMI_PADDING2 -o $FqClippedOut2 \
+        || echo2 "Failed to run clip_umi on $Fq2"
+    else
+        echo2 "$FqClippedOut2 has been generated previously" warning 
+    fi 
+
+    Type=IP
+    Bam=$BamOutDir/${Type}.${i}.bam
+    Log=$LogDir/bowtie2.${Type}.${i}.log
     echo2 "Aligning IP replicate $i to the genome $GenomeFa" 
-    bowtie2 \
-        -1 $Fq1 \
-        -2 $Fq2 \
-        -x $BowtieIndex \
-        -5 $UMI_PADDING1 \
-        -p $CPU \
-        --very-sensitive \
-        --no-mixed \
-        2> bowtie.${i}.log \
-    | samtools view -uS - \
-    | samtools sort - \
-        -o ${type}.${i}.bam \
-    && samtools index ${type}.${i}.bam \
-    || echo2 "Failed to align $Fq1 and $Fq2 to $BowtieIndex" error 
-
+    if [[ ! -s $Bam ]]; then 
+        PeBowtie2Alignment \
+            $FqClippedOut1 \
+            $FqClippedOut2 \
+            $BowtieIndex \
+            $Bam \
+            $Threads \
+            $Log
+    else 
+        echo2 "Alignment to generate $Bam has been done previously" warning 
+    fi 
+    IpBams+=( $Bam )
 done

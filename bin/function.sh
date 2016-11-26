@@ -5,3 +5,4 @@ if [[ -z $FONT_COLOR_RED ]]; then
 fi
 
 . "$ThisBin"/function/basic.sh
+. "$ThisBin"/function/alignment.sh

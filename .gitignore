@@ -51,5 +51,7 @@ build/
 /bin/nproc
 /bin/awk
 /bin/readlink
+/bin/clip_umi
+/bin/bam_dedup
 /cmake-build-debug
 bin/python/

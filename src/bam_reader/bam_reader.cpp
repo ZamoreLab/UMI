@@ -231,16 +231,21 @@ bool BamFilePeReader::NextAligned() {
     while (b1_->core.flag & BAM_FUNMAP && ret1 > 0) {
         ret1 = sam_read1(bamfh_, header_, b1_);
     }
-    if (ret1 <= 0) return false;
+    if (ret1 <= 0) {
+        good_ = false;
+        return false;
+    }
 
     int ret2 = sam_read1(bamfh_, header_, b2_);
     while (b2_->core.flag & BAM_FUNMAP && ret2 > 0) {
         ret2 = sam_read1(bamfh_, header_, b2_);
     }
-    if (ret2 <= 0) return false;
+    if (ret2 <= 0) {
+        good_ = false;
+        return false;
+    }
     EnsureDirection();
-    return IsAppropriatelyAligned()
-        && IsSameRead();
+    return IsAppropriatelyAligned();
 }
 
 bool BamFilePeReader::IsAligned() const {

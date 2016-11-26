@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
                 umi_pad = atoi(optarg);
                 break;
             case 'h':
-                usage(argv[1]);
+                usage(argv[0]);
                 exit(0);
             default:
                 fprintf(stderr, "unknown option\n");
