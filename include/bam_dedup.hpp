@@ -6,6 +6,9 @@
 
 class BamPeDedupper
     : public BamFilePeReader {
+private:
+    using base = BamFilePeReader;
+    using self = BamPeDedupper;
 
 protected:
     struct Coordinate {
@@ -31,9 +34,9 @@ protected:
 
 protected:
     hash_t rec_;
-
+    samFile *out_ = nullptr;
 public:
-    BamPeDedupper(const char *filename);
+    explicit BamPeDedupper(const char *filename, const char *outname = "-");
 
     BamPeDedupper(BamPeDedupper&&);
 
@@ -42,4 +45,7 @@ public:
     ~BamPeDedupper();
 
     bool IsSameRead() const override;
+
+    int Write();
+
 };

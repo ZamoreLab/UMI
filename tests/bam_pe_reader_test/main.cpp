@@ -24,7 +24,14 @@ TEST_F(BamPeReaderTest, ReaderInitialization) {
     EXPECT_TRUE(reader.IsInitiated());
     reader.NextAligned();
     EXPECT_TRUE(reader.IsInitiated());
-    EXPECT_FALSE(reader.IsAppropriatelyAligned());
+    EXPECT_TRUE(reader.IsAppropriatelyAligned());
+}
+
+TEST_F(BamPeReaderTest, AlignedCount) {
+    reader.Open(tests::TestPeBamFile.c_str());
+    int i = 0;
+    while(reader.NextAligned()) ++i;
+    EXPECT_EQ(i, 7390);
 }
 
 int main(int argc, char **argv) {

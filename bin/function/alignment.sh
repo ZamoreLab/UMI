@@ -11,6 +11,7 @@ function PeBowtie2Alignment {
         -x $I \
         -p $T \
         --very-sensitive \
+        --no-discordant \
         --no-mixed \
         2> $Log \
     | samtools view -uS - -o $B \
