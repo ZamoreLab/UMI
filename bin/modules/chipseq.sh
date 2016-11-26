@@ -189,7 +189,7 @@ declare Bam
 declare Log
 declare -a InputBams
 declare -a IpBams
-for i in $(seq 0 $(( $numOfRep - 1 )) ); do 
+for i in $(seq 0 $(( numOfRep - 1 )) ); do 
     Fq1=${InputFastq1[$i]}
     Fq1Base=$(basename $Fq1)
     Fq1Prefix=${Fq1Base%.f[aq]*}

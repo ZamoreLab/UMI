@@ -1,5 +1,6 @@
 # Tools to process UMI libraries used in the Zamore Lab 
 [![Build Status](https://travis-ci.org/ZamoreLab/UMI.svg?branch=master)](https://travis-ci.org/ZamoreLab/UMI)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a8d1d04811d14b75a1af5b93b76ec91c)](https://www.codacy.com/app/bowhan/UMI?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ZamoreLab/UMI&amp;utm_campaign=Badge_Grade)
 <br>
 This repository stores codes used to parse Illumina libraries made with unique molecular identifier (UMI).<br> 
 *Under development*

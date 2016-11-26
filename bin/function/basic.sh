@@ -2,15 +2,15 @@
 # print info with different color based on the second argument
 function echo2 {
 if [[ $# -eq 1 ]]; then
-    echo -e $FONT_COLOR_GREEN"[`date "+$ISO_8601"`] ${1}${FONT_COLOR_RESET}"
+    echo -e $FONT_COLOR_GREEN"[$(date "+$ISO_8601")] ${1}${FONT_COLOR_RESET}"
 else
     case $2 in
         warning) 
-            echo -e $FONT_COLOR_MAGENTA"[`date "+$ISO_8601"`] Warning: $1${FONT_COLOR_RESET}";;
+            echo -e $FONT_COLOR_MAGENTA"[$(date "+$ISO_8601")] Warning: $1${FONT_COLOR_RESET}";;
         error)   
-            echo -e $FONT_STYLE_BOLD$FONT_COLOR_RED"[`date "+$ISO_8601"`] Error: $1${FONT_COLOR_RESET}" && exit 1;;
+            echo -e $FONT_STYLE_BOLD$FONT_COLOR_RED"[$(date "+$ISO_8601")] Error: $1${FONT_COLOR_RESET}" && exit 1;;
         *)       
-            echo -e $FONT_COLOR_GREEN"[`date "+$ISO_8601"`] $1${FONT_COLOR_RESET}";;
+            echo -e $FONT_COLOR_GREEN"[$(date "+$ISO_8601")] $1${FONT_COLOR_RESET}";;
     esac
 fi
 }
