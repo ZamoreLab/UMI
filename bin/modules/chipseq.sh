@@ -59,7 +59,7 @@ ${REQUIRED}[ required ]
 ${OPTIONAL}[ optional ]
     -o      Output directory, default: $OUTPUT_DIR
     -c      Number of cores/CPU to use, default: $Threads
-    -M      Length of UMI on \1 and \2, default: $UMI_LEN1
+    -N      Length of UMI on \1 and \2, default: $UMI_LEN1
     -P      Length of UMI padding on \1 and \2, default: $UMI_PADDING1
 
 ${FORDEBUG} [ Debug ]
@@ -71,7 +71,7 @@ EOF
 }
 
 # argument parse
-while getopts "hl:r:L:R:g:b:o:c:M:P:D" OPTION; do
+while getopts "hl:r:L:R:g:b:o:c:N:P:D" OPTION; do
     case $OPTION in
         h) # usage 
             usage && exit 0
@@ -110,7 +110,7 @@ while getopts "hl:r:L:R:g:b:o:c:M:P:D" OPTION; do
         o) # output directory
             OutputDir=$(readlink -f "$OPTARG")
         ;;
-        M)
+        N)
             UMI_LEN1=$OPTARG
         ;;
         P)
