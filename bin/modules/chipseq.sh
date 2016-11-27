@@ -276,12 +276,17 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
             $BowtieIndex \
             $Bam \
             $Threads \
-            $Log \
-        && echo2 "Removing duplicated UMI from $Bam" \
-        && bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
+            $Log
+    else
+        echo2 "Alignment to generate $Bam has been done previously" warning 
+    fi 
+
+    if [[ ! -s $DedupBam ]]; then 
+        echo2 "Removing duplicated UMI from $Bam"
+        bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
         || echo2 "Failed to run bam_dedup on $Bam" error 
     else 
-        echo2 "Alignment to generate $Bam has been done previously" warning 
+        echo2 "Duplicating $Bam has been done previously" warning
     fi 
     IpBams+=( $DedupBam )
 done
