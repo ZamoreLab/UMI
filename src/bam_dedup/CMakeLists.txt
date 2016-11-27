@@ -1,6 +1,6 @@
 add_executable(bam_dedup
-        bam_dedup.cpp
         bam_dedup_main.cpp
+        bam_dedup.cpp
         ${${PROJECT_NAME}_SRC_DIR}/bam_reader/bam_reader.cpp
         ${${PROJECT_NAME}_SRC_DIR}/utils/utils.cpp
         )

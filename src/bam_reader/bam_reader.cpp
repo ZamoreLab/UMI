@@ -1,6 +1,7 @@
 #include "bam_reader.hpp"
 #include "utils.hpp"
 #include <assert.h>
+#include <htslib/sam.h>
 
 BamFileReader::BamFileReader(const char *bamfile) {
     good_ = Open(bamfile);
@@ -342,8 +343,7 @@ bool BamFilePeReader::IsAppropriatelyAligned() const {
     return IsAligned()
         && IsSameRead()
         && (b1_->core.flag & BAM_FREAD1) ^ (b2_->core.flag & BAM_FREAD1)
-        && IsAlignedOppoStrand()
-        ;
+        && IsAlignedOppoStrand();
 }
 
 void BamFilePeReader::EnsureDirection() {

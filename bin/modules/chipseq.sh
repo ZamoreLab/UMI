@@ -12,9 +12,7 @@ declare -x BowtieIndex
 declare -x OutputDir="$PWD"
 declare -xi Threads=$DEFAULT_NUM_THREADS 
 declare -xi UMI_LEN1=$DEFAULT_UMI_LEN1
-declare -xi UMI_LEN2=$DEFAULT_UMI_LEN2
 declare -xi UMI_PADDING1=$DEFAULT_UMI_PADDING1
-declare -xi UMI_PADDING2=$DEFAULT_UMI_PADDING2
 
 # overwrite it if it's higher than the number of cores available
 if which nproc &>/dev/null; then 
@@ -41,7 +39,7 @@ for program in "${RequiredPrgrams[@]}"; do assertBinExists $program; done
 usage () {
 cat << EOF
 
-This pipeline takes paired-end Illumina run as input and perform Chip-Seq analysis.
+This pipeline takes paired-end Illumina UMI libraries as input and perform Chip-Seq analysis.
 
 Version: $PROG_VERSION
 
@@ -61,10 +59,8 @@ ${REQUIRED}[ required ]
 ${OPTIONAL}[ optional ]
     -o      Output directory, default: $OUTPUT_DIR
     -c      Number of cores/CPU to use, default: $Threads
-    -M      Length of UMI on \1, default: $UMI_LEN1
-    -N      Length of UMI on \2, default: $UMI_LEN2
-    -P      Length of UMI padding on \1, default: $UMI_PADDING1
-    -Q      Length of UMI padding on \2, default: $UMI_PADDING1
+    -M      Length of UMI on \1 and \2, default: $UMI_LEN1
+    -P      Length of UMI padding on \1 and \2, default: $UMI_PADDING1
 
 ${FORDEBUG} [ Debug ]
     -D      Debug mode, default: off
@@ -75,7 +71,7 @@ EOF
 }
 
 # argument parse
-while getopts "hl:r:L:R:g:b:o:c:M:N:P:Q:D" OPTION; do
+while getopts "hl:r:L:R:g:b:o:c:M:P:D" OPTION; do
     case $OPTION in
         h) # usage 
             usage && exit 0
@@ -117,14 +113,8 @@ while getopts "hl:r:L:R:g:b:o:c:M:N:P:Q:D" OPTION; do
         M)
             UMI_LEN1=$OPTARG
         ;;
-        N)
-            UMI_LEN2=$OPTARG
-        ;;
         P)
             UMI_PADDING1=$OPTARG
-        ;;
-        Q)
-            UMI_PADDING2=$OPTARG
         ;;
         D) # turn on debug
             set -x
@@ -156,7 +146,7 @@ declare -xi numOfRep=${#InputFastq1[@]}
 # double-check variables beein defined
 declare -a RequiredVariables=(\
     InputFastq1 InputFastq2 GenomeFa BowtieIndex \
-    UMI_LEN1 UMI_LEN2 UMI_PADDING1 UMI_PADDING2 \
+    UMI_LEN1 UMI_PADDING1 \
     Threads OutputDir \
 )
 
@@ -186,9 +176,11 @@ declare Fq1Base
 declare Fq2Base
 declare Type
 declare Bam
+declare DedupBam
 declare Log
 declare -a InputBams
 declare -a IpBams
+
 for i in $(seq 0 $(( numOfRep - 1 )) ); do 
     Fq1=${InputFastq1[$i]}
     Fq1Base=$(basename $Fq1)
@@ -201,17 +193,17 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     FqClippedOut2=$FqOutDir/${Fq2Prefix}.clipped.fq
 
     # pre-process fq file
-    echo2 "Clipping UMI on ChIP-Seq Input $Fq1"
     if [[ ! -s $FqClippedOut1 ]]; then
+        echo2 "Clipping UMI on ChIP-Seq Input $Fq1"
         clip_umi -i "$Fq1" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut1 \
         || echo2 "Failed to run clip_umi on $Fq1"
     else
         echo2 "$FqClippedOut1 has been generated previously" warning 
     fi 
 
-    echo2 "Clipping UMI on ChIP-Seq Input $Fq2"
     if [[ ! -s $FqClippedOut2 ]]; then
-        clip_umi -i "$Fq2" -l $UMI_LEN2 -p $UMI_PADDING2 -o $FqClippedOut2 \
+        echo2 "Clipping UMI on ChIP-Seq Input $Fq2"
+        clip_umi -i "$Fq2" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut2 \
         || echo2 "Failed to run clip_umi on $Fq2"
     else
         echo2 "$FqClippedOut2 has been generated previously" warning 
@@ -219,20 +211,24 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
 
     Type=input
     Bam=$BamOutDir/${Type}.${i}.bam
+    DedupBam=$BamOutDir/${Type}.${i}.dedup.bam
     Log=$LogDir/bowtie2.${Type}.${i}.log
-    echo2 "Aligning input replicate $i to the genome $GenomeFa"
     if [[ ! -s $Bam ]]; then 
+        echo2 "Aligning input replicate $i to the genome $GenomeFa"
         PeBowtie2Alignment \
             $FqClippedOut1 \
             $FqClippedOut2 \
             $BowtieIndex \
             $Bam \
             $Threads \
-            $Log
+            $Log \
+        && echo2 "Removing duplicated UMI from $Bam" \
+        && bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
+        || echo2 "Failed to run bam_dedup on $Bam" error 
     else
         echo2 "Alignment to generate $Bam has been done previously" warning 
     fi 
-    InputBams+=( $Bam )
+    InputBams+=( $DedupBam )
 
     # IP
     Fq1=${IpFastq1[$i]}
@@ -246,17 +242,17 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     FqClippedOut2=$FqOutDir/${Fq2Prefix}.clipped.fq
 
     # pre-process fq file
-    echo2 "Clipping UMI on ChIP-Seq IP $Fq1"
     if [[ ! -s $FqClippedOut1 ]]; then
+        echo2 "Clipping UMI on ChIP-Seq IP $Fq1"
         clip_umi -i "$Fq1" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut1 \
         || echo2 "Failed to run clip_umi on $Fq1"
     else
         echo2 "$FqClippedOut1 has been generated previously" warning 
     fi 
 
-    echo2 "Clipping UMI on ChIP-Seq IP $Fq2"
     if [[ ! -s $FqClippedOut2 ]]; then
-        clip_umi -i "$Fq2" -l $UMI_LEN2 -p $UMI_PADDING2 -o $FqClippedOut2 \
+        echo2 "Clipping UMI on ChIP-Seq IP $Fq2"
+        clip_umi -i "$Fq2" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut2 \
         || echo2 "Failed to run clip_umi on $Fq2"
     else
         echo2 "$FqClippedOut2 has been generated previously" warning 
@@ -264,18 +260,23 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
 
     Type=IP
     Bam=$BamOutDir/${Type}.${i}.bam
+    DedupBam=$BamOutDir/${Type}.${i}.dedup.bam
+
     Log=$LogDir/bowtie2.${Type}.${i}.log
-    echo2 "Aligning IP replicate $i to the genome $GenomeFa" 
     if [[ ! -s $Bam ]]; then 
+        echo2 "Aligning IP replicate $i to the genome $GenomeFa" 
         PeBowtie2Alignment \
             $FqClippedOut1 \
             $FqClippedOut2 \
             $BowtieIndex \
             $Bam \
             $Threads \
-            $Log
+            $Log \
+        && echo2 "Removing duplicated UMI from $Bam" \
+        && bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
+        || echo2 "Failed to run bam_dedup on $Bam" error 
     else 
         echo2 "Alignment to generate $Bam has been done previously" warning 
     fi 
-    IpBams+=( $Bam )
+    IpBams+=( $DedupBam )
 done

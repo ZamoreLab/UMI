@@ -23,8 +23,11 @@ TEST_F(BamPeReaderTest, ReaderInitialization) {
     reader.Open(tests::TestPeBamFile.c_str());
     EXPECT_TRUE(reader.IsInitiated());
     reader.NextAligned();
+    EXPECT_TRUE(reader.GetName() == "M03805:93:000000000-AP3DT:1:1101:1940:16746");
     EXPECT_TRUE(reader.IsInitiated());
     EXPECT_TRUE(reader.IsAppropriatelyAligned());
+    reader.NextAligned();
+    EXPECT_TRUE(reader.GetName() == "M03805:93:000000000-AP3DT:1:1101:2442:18423");
 }
 
 TEST_F(BamPeReaderTest, AlignedCount) {
