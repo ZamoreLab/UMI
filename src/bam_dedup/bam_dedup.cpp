@@ -89,16 +89,16 @@ bool BamPeDedupper::_BamQualCmp(bam1_t *a1, bam1_t *a2, bam1_t *b1, bam1_t *b2) 
     int i{0}, q1{0}, q2{0};
     uint8_t *s;
     s = bam_get_qual(a1);
-    for (i = 0; i < a1->core.l_qseq; ++i, ++s) q1 += *s;
+    for (i = 0; i < a1->core.l_qseq; ++i, ++s) q1 += *s - 33;
 
     s = bam_get_qual(a2);
-    for (i = 0; i < a2->core.l_qseq; ++i, ++s) q1 += *s;
+    for (i = 0; i < a2->core.l_qseq; ++i, ++s) q1 += *s - 33;
 
     s = bam_get_qual(b1);
-    for (i = 0; i < b1->core.l_qseq; ++i, ++s) q2 += *s;
+    for (i = 0; i < b1->core.l_qseq; ++i, ++s) q2 += *s - 33;
 
     s = bam_get_qual(b2);
-    for (i = 0; i < b2->core.l_qseq; ++i, ++s) q2 += *s;
+    for (i = 0; i < b2->core.l_qseq; ++i, ++s) q2 += *s - 33;
 
     return q1 > q2;
 }
