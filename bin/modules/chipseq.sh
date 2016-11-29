@@ -229,6 +229,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     if [[ ! -s $DedupBam ]]; then 
         echo2 "Removing duplicated UMI from $Bam"
         bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
+            &> $LogDir/bam_dedup.${Type}.${i}.log \
         && rm $Bam $FqClippedOut1 $FqClippedOut2 \
         || echo2 "Failed to run bam_dedup on $Bam" error 
     else 
@@ -285,6 +286,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     if [[ ! -s $DedupBam ]]; then 
         echo2 "Removing duplicated UMI from $Bam"
         bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
+            &> $LogDir/bam_dedup.${Type}.${i}.log \
         && rm $Bam $FqClippedOut1 $FqClippedOut2 \
         || echo2 "Failed to run bam_dedup on $Bam" error 
     else 
