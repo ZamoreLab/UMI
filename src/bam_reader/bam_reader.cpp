@@ -86,6 +86,10 @@ uint32_t BamFileReader::_GetCigarLen(bam1_t *b) {
     return b->core.n_cigar;;
 }
 
+std::string BamFileReader::_GetChr(bam1_t *b, bam_hdr_t *h) {
+    return h->target_name[b->core.tid];
+}
+
 bool BamFileReader::IsGood() const noexcept {
     return good_;
 }
@@ -136,10 +140,6 @@ std::string BamFileSeReader::GetName() const {
     return bam_get_qname(b_);
 }
 
-std::string BamFileSeReader::GetChr() const {
-    return header_->target_name[b_->core.tid];;
-}
-
 bool BamFileSeReader::IsPassPhred(uint8_t minphred) const {
     return BamFileReader::_IsPassPhred(b_, minphred);
 }
@@ -187,6 +187,10 @@ const bam1_t *BamFileSeReader::GetBam() const {
 
 bool BamFileSeReader::IsPlusStrand() const {
     return BamFileReader::_IsPlusStrand(b_);
+}
+
+std::string BamFileSeReader::GetChr() const {
+    return _GetChr(b_, header_);
 }
 
 /* BamFilePeReader */

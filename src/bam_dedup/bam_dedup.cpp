@@ -66,9 +66,11 @@ bool BamPeDedupper::NextAligned() {
         while (*s1++ != '_');
         char *s2 = bam_get_qname(b2_);
         while (*s2++ != '_');
-        Coordinate c{_GetStart(b1_)
-                     , std::string{s1, s1 + umilen_}
-                     , std::string{s2, s2 + umilen_}
+        Coordinate c{
+            _GetStart(b1_)
+            , GetChr()
+            , std::string{s1, s1 + umilen_}
+            , std::string{s2, s2 + umilen_}
         };
         auto e = rec_.find(c);
         if (e != rec_.end()) {

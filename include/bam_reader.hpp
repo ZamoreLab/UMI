@@ -25,6 +25,8 @@ protected:
 
     static uint32_t _GetCigarLen(bam1_t *b);
 
+    static std::string _GetChr(bam1_t *b, bam_hdr_t *h);
+
     static bool _IsPlusStrand(bam1_t *b);
 
 public:
@@ -106,8 +108,6 @@ public:
 
     virtual std::string GetName() const override;
 
-    virtual std::string GetChr() const override;
-
     int32_t GetStart() const;
 
     int32_t GetEnd() const;
@@ -119,6 +119,8 @@ public:
     uint32_t GetCigarLen() const;
 
     std::string GetSeq() const;
+
+    std::string GetChr() const override;
 
     bam1_t *GetBam();
 

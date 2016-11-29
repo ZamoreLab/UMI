@@ -13,11 +13,13 @@ private:
 protected:
     struct Coordinate {
         int32_t start;
+        std::string chr;
         std::string umi1;
         std::string umi2;
 
         bool operator==(const Coordinate& other) const {
-            return (start == other.start
+            return (chr == other.chr
+                && start == other.start
                 && umi1 == other.umi1
                 && umi2 == other.umi2
             );
@@ -28,6 +30,7 @@ protected:
         std::size_t operator()(const Coordinate& c) const {
             std::size_t seed = 0;
             boost::hash_combine(seed, boost::hash_value(c.start));
+            boost::hash_combine(seed, boost::hash_value(c.chr));
             boost::hash_combine(seed, boost::hash_value(c.umi1));
             boost::hash_combine(seed, boost::hash_value(c.umi2));
             return seed;
