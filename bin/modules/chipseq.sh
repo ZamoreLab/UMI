@@ -29,8 +29,8 @@ declare -x LogDir
 
 # required binaries, make sure they exist
 declare -a RequiredPrgrams=( \
-    readlink sed awk \
-    python \
+    readlink sed awk faSize \
+    python macs2 \
     samtools bowtie2 \
 )
 for program in "${RequiredPrgrams[@]}"; do assertBinExists $program; done
@@ -293,4 +293,35 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
         echo2 "Duplicating $Bam has been done previously" warning
     fi 
     IpBams+=( $DedupBam )
+done
+
+# call peaks with macs2
+if [[ ! -s $LogDir/macs2.done ]]; then 
+    echo2 "Calling peaks with MACS2"
+    macs2 callpeak \
+        -t ${IpBams[@]} \
+        -c ${InputBams[@]} \
+        -g $( faSize -detailed -tab ${GenomeFa} | awk '{a+=$2}END{print a}' ) \
+        --outdir ${WorkingDir}/macs_out \
+        -n ${RunName} \
+        -B \
+        --SPMR \
+        --keep-dup all \
+        &> $LogDir/macs2.log \
+    && touch $LogDir/macs2.done \
+    || echo2 "Failed to run macs2"
+fi
+
+for target in treat_pileup control_lambda; do 
+    if [[   -s ${WorkingDir}/macs_out/${RunName}_${target}.bdg \
+       && ! -s ${WorkingDir}/macs_out/${RunName}_${target}.bw ]]; then 
+       echo2 "Converting $target bedGraph to bigWig"
+        sort -k1,1 -k2,2n ${WorkingDir}/macs_out/${RunName}_${target}.bdg > ${WorkingDir}/macs_out/${RunName}_${target}.sorted.bdg \
+        && bedGraphToBigWig \
+            ${WorkingDir}/macs_out/${RunName}_${target}.sorted.bdg \
+            <( faSize -detailed -tab ${GenomeFa} ) \
+            ${WorkingDir}/macs_out/${RunName}_${target}.bw \
+        && rm ${WorkingDir}/macs_out/${RunName}_${target}.sorted.bdg \
+        || echo2 "Failed to convert ${WorkingDir}/macs_out/${RunName}_${target}" error
+    fi
 done
