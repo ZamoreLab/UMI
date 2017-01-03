@@ -25,6 +25,7 @@ declare -x FigureOut
 declare -x WorkingDir
 declare -x FqOutDir
 declare -x BamOutDir
+declare -x BigWigOurDir
 declare -x LogDir
 
 # required binaries, make sure they exist
@@ -167,6 +168,7 @@ FigureOutDir=$OutputDir/figures && mkdir -p "$FigureOutDir" || echo2 "Failed to 
 WorkingDir=$OutputDir/jobs && mkdir -p "$WorkingDir" || echo2 "Failed to create directory $WorkingDir" error
 FqOutDir=$OutputDir/fastq && mkdir -p "$FqOutDir" || echo2 "Failed to create directory $FqOutDir" error 
 BamOutDir=$OutputDir/bam && mkdir -p "$BamOutDir" || echo2 "Failed to create directory $BamOutDir" error 
+BigWigOurDir=$OutputDir/bigWigs && mkdir -p "$BigWigOurDir" || echo2 "Failed to create directory $BigWigOurDir" error 
 LogDir=$OutputDir/log && mkdir -p "$LogDir" || echo2 "Failed to create directory $LogDir" error 
 
 # aligning
@@ -296,7 +298,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
 done
 
 # call peaks with macs2
-if [[ ! -s $LogDir/macs2.done ]]; then 
+if [[ ! -f $LogDir/macs2.callpeak.done ]]; then 
     echo2 "Calling peaks with MACS2"
     macs2 callpeak \
         -t ${IpBams[@]} \
@@ -307,21 +309,27 @@ if [[ ! -s $LogDir/macs2.done ]]; then
         -B \
         --SPMR \
         --keep-dup all \
-        &> $LogDir/macs2.log \
-    && touch $LogDir/macs2.done \
+        &> $LogDir/macs2.callpeak.log \
+    && touch $LogDir/macs2.callpeak.done \
     || echo2 "Failed to run macs2"
 fi
 
-for target in treat_pileup control_lambda; do 
-    if [[   -s ${WorkingDir}/macs_out/${RunName}_${target}.bdg \
-       && ! -s ${WorkingDir}/macs_out/${RunName}_${target}.bw ]]; then 
-       echo2 "Converting $target bedGraph to bigWig"
-        sort -k1,1 -k2,2n ${WorkingDir}/macs_out/${RunName}_${target}.bdg > ${WorkingDir}/macs_out/${RunName}_${target}.sorted.bdg \
+for method in FE logLR; do 
+    if [[ ! -f $LogDir/macs2.bdgcmp.${method}.done ]]; then 
+        echo2 "Calculating ${method} and generate bigWig file"
+        macs2 bdgcmp \
+            -t ${WorkingDir}/macs_out/${RunName}_treat_pileup.bdg \
+            -c ${WorkingDir}/macs_out/${RunName}_control_lambda.bdg \
+            -m ${method} \
+            -o ${WorkingDir}/macs_out/${RunName}.${method}.bedgraph \
+            2> $LogDir/macs2.bdgcmp.${method}.log \
+        && sort -k1,1 -k2,2n ${WorkingDir}/macs_out/${RunName}.${method}.bedgraph > ${WorkingDir}/macs_out/${RunName}.${method}.bedgraph.sorted \
         && bedGraphToBigWig \
-            ${WorkingDir}/macs_out/${RunName}_${target}.sorted.bdg \
+            ${WorkingDir}/macs_out/${RunName}.${method}.bedgraph.sorted \
             <( faSize -detailed -tab ${GenomeFa} ) \
-            ${WorkingDir}/macs_out/${RunName}_${target}.bw \
-        && rm ${WorkingDir}/macs_out/${RunName}_${target}.sorted.bdg \
+            ${BigWigOurDir}/${RunName}.${method}.bw \
+        && rm ${WorkingDir}/macs_out/${RunName}.${method}.bedgraph.sorted \
+        && touch $LogDir/macs2.bdgcmp.${method}.done \
         || echo2 "Failed to convert ${WorkingDir}/macs_out/${RunName}_${target}" error
     fi
-done
+done 
