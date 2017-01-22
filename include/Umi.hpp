@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "seq_reader.hpp"
+#include "SeqReader.hpp"
 #include <string.h>
 
 class UmiClipper

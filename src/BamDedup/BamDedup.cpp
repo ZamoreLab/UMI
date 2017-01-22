@@ -1,6 +1,10 @@
 #include <htslib/sam.h>
-#include "bam_dedup.hpp"
+#include "BamDedup.hpp"
 #include <iostream>
+
+
+
+
 
 BamPeDedupper::BamPeDedupper(const char *filename, const char *outname, int l)
     : BamFilePeReader(filename)

@@ -1,5 +1,5 @@
-#include "seq_reader.hpp"
-#include "umi.hpp"
+#include "SeqReader.hpp"
+#include "Umi.hpp"
 #include <zlib.h>
 #include <htslib/kseq.h>
 #include <getopt.h>

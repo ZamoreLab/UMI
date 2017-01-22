@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <data.hpp>
-#include "bam_reader.hpp"
+#include "BamReader.hpp"
 #include "gtest/gtest.h"
 
 using namespace std;

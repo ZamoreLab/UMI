@@ -1,6 +1,6 @@
-#include "utils.hpp"
+#include "Utils.hpp"
 #include <unistd.h>
-#include "kernel_color.hpp"
+#include "KernelColor.hpp"
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>

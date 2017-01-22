@@ -1,6 +1,6 @@
 #include <string>
 #include "gtest/gtest.h"
-#include "seq_reader.hpp"
+#include "SeqReader.hpp"
 #include "data.hpp"
 #include <stdio.h>
 #include <stdlib.h>

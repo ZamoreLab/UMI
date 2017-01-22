@@ -198,7 +198,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     if [[ ! -s $FqClippedOut1 ]]; then
         echo2 "Clipping UMI on ChIP-Seq Input $Fq1"
         clip_umi -i "$Fq1" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut1 \
-        || echo2 "Failed to run clip_umi on $Fq1"
+        || echo2 "Failed to run ClipUmi on $Fq1"
     else
         echo2 "$FqClippedOut1 has been generated previously" warning 
     fi 
@@ -206,7 +206,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     if [[ ! -s $FqClippedOut2 ]]; then
         echo2 "Clipping UMI on ChIP-Seq Input $Fq2"
         clip_umi -i "$Fq2" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut2 \
-        || echo2 "Failed to run clip_umi on $Fq2"
+        || echo2 "Failed to run ClipUmi on $Fq2"
     else
         echo2 "$FqClippedOut2 has been generated previously" warning 
     fi 
@@ -233,7 +233,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
         bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
             &> $LogDir/bam_dedup.${Type}.${i}.log \
         && rm $Bam $FqClippedOut1 $FqClippedOut2 \
-        || echo2 "Failed to run bam_dedup on $Bam" error 
+        || echo2 "Failed to run BamDedup on $Bam" error
     else 
         echo2 "Duplicating $Bam has been done previously" warning
     fi 
@@ -254,7 +254,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     if [[ ! -s $FqClippedOut1 ]]; then
         echo2 "Clipping UMI on ChIP-Seq IP $Fq1"
         clip_umi -i "$Fq1" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut1 \
-        || echo2 "Failed to run clip_umi on $Fq1"
+        || echo2 "Failed to run ClipUmi on $Fq1"
     else
         echo2 "$FqClippedOut1 has been generated previously" warning 
     fi 
@@ -262,7 +262,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
     if [[ ! -s $FqClippedOut2 ]]; then
         echo2 "Clipping UMI on ChIP-Seq IP $Fq2"
         clip_umi -i "$Fq2" -l $UMI_LEN1 -p $UMI_PADDING1 -o $FqClippedOut2 \
-        || echo2 "Failed to run clip_umi on $Fq2"
+        || echo2 "Failed to run ClipUmi on $Fq2"
     else
         echo2 "$FqClippedOut2 has been generated previously" warning 
     fi 
@@ -290,7 +290,7 @@ for i in $(seq 0 $(( numOfRep - 1 )) ); do
         bam_dedup -i $Bam -o $DedupBam -l $UMI_LEN1 \
             &> $LogDir/bam_dedup.${Type}.${i}.log \
         && rm $Bam $FqClippedOut1 $FqClippedOut2 \
-        || echo2 "Failed to run bam_dedup on $Bam" error 
+        || echo2 "Failed to run BamDedup on $Bam" error
     else 
         echo2 "Duplicating $Bam has been done previously" warning
     fi 

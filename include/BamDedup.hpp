@@ -1,8 +1,9 @@
 #pragma once
-#include "bam_reader.hpp"
+#include "BamReader.hpp"
 #include <string>
-#include <boost/functional/hash.hpp>
 #include <unordered_map>
+#include <boost/functional/hash.hpp>
+
 
 class BamPeDedupper
     : public BamFilePeReader {

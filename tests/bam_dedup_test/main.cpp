@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 #include "data.hpp"
-#include "bam_dedup.hpp"
+#include "BamDedup.hpp"
 #include "gtest/gtest.h"
 
 using namespace std;

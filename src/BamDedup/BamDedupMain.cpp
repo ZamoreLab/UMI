@@ -1,4 +1,4 @@
-#include "bam_dedup.hpp"
+#include "BamDedup.hpp"
 #include <string>
 
 using namespace std;

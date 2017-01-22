@@ -1,5 +1,5 @@
-#include <seq_reader.hpp>
-#include "umi.hpp"
+#include <SeqReader.hpp>
+#include "Umi.hpp"
 
 UmiClipper::UmiClipper(const char *filename, const char *outname, int len, int pad)
     : base(filename)
@@ -42,8 +42,8 @@ UmiClipper::~UmiClipper() {
 
 int UmiClipper::Clip() {
     if (base::Next()) {
-        while(seq_->seq.l <= umi_len_ + umi_pad_) {
-            if(!base::Next()) return 0;
+        while (seq_->seq.l <= umi_len_ + umi_pad_) {
+            if (!base::Next()) return 0;
         }
         return fprintf(outfh_, "@%s_"
                 "%.*s\n"
@@ -60,8 +60,8 @@ int UmiClipper::Clip() {
 
 int UmiClipper::Clip(char *outbuf, size_t l) {
     if (base::Next()) {
-        while(seq_->seq.l <= umi_len_ + umi_pad_) {
-            if(!base::Next()) return 0;
+        while (seq_->seq.l <= umi_len_ + umi_pad_) {
+            if (!base::Next()) return 0;
         }
         int i = 0;
         outbuf[i++] = '@';

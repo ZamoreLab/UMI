@@ -1,5 +1,5 @@
-#include "bam_reader.hpp"
-#include "utils.hpp"
+#include "BamReader.hpp"
+#include "Utils.hpp"
 #include <assert.h>
 #include <htslib/sam.h>
 

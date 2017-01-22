@@ -1,13 +1,20 @@
-project(ZamoreUmiSeq CXX C)
 cmake_minimum_required(VERSION 3.0)
+if (POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
+endif ()
+if (POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+endif ()
+
+project(ZamoreUmiSeq CXX C)
 
 # compiler flags
 include(CheckCXXCompilerFlag)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y") # use C++14 for now
 check_cxx_compiler_flag("-Wno-unused-local-typedefs" HAS_NO_UNUSED_LOCAL_TYPEDEFS)
-if(HAS_NO_UNUSED_LOCAL_TYPEDEFS)
+if (HAS_NO_UNUSED_LOCAL_TYPEDEFS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
-endif()
+endif ()
 
 # determine the version
 foreach (level MAJOR MINOR PATCH)
@@ -42,10 +49,10 @@ include_directories(${BOOST_INCLUDE_DIRS})
 
 # load ZLIB for htslib, build one if not exist
 find_package(ZLIB)
-if(NOT ZLIB_FOUND)
+if (NOT ZLIB_FOUND)
     message(STATUS "${Red}Failed to find Zlib, compile it ourselves${ColourReset}")
     include(cmake/zlib.cmake)
-endif()
+endif ()
 
 # install htslib, a must have
 message(STATUS "${Green}CMaking htslib${ColourReset}")
@@ -68,29 +75,29 @@ endif ()
 
 # Bowtie2
 find_program(HAS_BOWTIE2 "bowtie2" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if(NOT HAS_BOWTIE2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG") 
+if (NOT HAS_BOWTIE2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
     message(STATUS "${Yellow}CMaking optional target Bowtie2${ColourReset}")
-    include(cmake/bowtie2.cmake) 
-endif()
+    include(cmake/bowtie2.cmake)
+endif ()
 
 # samtools
 find_program(HAS_SAMTOOLS "samtools" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if(NOT HAS_SAMTOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG") 
+if (NOT HAS_SAMTOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
     message(STATUS "${Yellow}CMaking optional target Samtools${ColourReset}")
-    include(cmake/samtools.cmake) 
-endif()
+    include(cmake/samtools.cmake)
+endif ()
 
 # macs2
 find_program(HAS_MACS2 "macs2" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if(NOT HAS_MACS2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG") 
+if (NOT HAS_MACS2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
     message(STATUS "${Yellow}CMaking optional target MACS2${ColourReset}")
-    include(cmake/macs2.cmake) 
-endif()
+    include(cmake/macs2.cmake)
+endif ()
 
 # umitools
 find_program(HAS_UMITOOLS "umi_tools" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if(NOT HAS_UMITOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG") 
+if (NOT HAS_UMITOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
     message(STATUS "${Yellow}CMaking optional target umi-tools${ColourReset}")
-    include(cmake/umitools.cmake) 
-endif()
+    include(cmake/umitools.cmake)
+endif ()
 

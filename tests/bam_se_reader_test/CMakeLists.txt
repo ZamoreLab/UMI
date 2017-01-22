@@ -1,9 +1,9 @@
 add_executable(bamsereader_test
         main.cpp
-        ${${PROJECT_NAME}_INCLUDE_DIR}/bam_reader.hpp
-        ${${PROJECT_NAME}_SRC_DIR}/bam_reader/bam_reader.cpp
-        ${${PROJECT_NAME}_INCLUDE_DIR}/utils.hpp
-        ${${PROJECT_NAME}_SRC_DIR}/utils/utils.cpp
+        ${${PROJECT_NAME}_INCLUDE_DIR}/BamReader.hpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamReader/BamReader.cpp
+        ${${PROJECT_NAME}_INCLUDE_DIR}/Utils.hpp
+        ${${PROJECT_NAME}_SRC_DIR}/Utils/Utils.cpp
         )
 target_link_libraries(bamsereader_test
         gtest

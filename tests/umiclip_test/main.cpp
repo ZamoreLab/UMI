@@ -1,6 +1,6 @@
 #include <string>
 #include "gtest/gtest.h"
-#include "umi.hpp"
+#include "Umi.hpp"
 #include "data.hpp"
 #include <stdio.h>
 #include <stdlib.h>

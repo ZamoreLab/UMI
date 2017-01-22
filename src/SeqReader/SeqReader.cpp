@@ -1,5 +1,4 @@
-#include <seq_reader.hpp>
-#include "seq_reader.hpp"
+#include "SeqReader.hpp"
 
 
 Reader::Reader(const char *filename) {

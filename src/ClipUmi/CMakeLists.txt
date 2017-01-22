@@ -1,7 +1,7 @@
 add_executable(clip_umi
-        clip_umi.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/seq_reader/seq_reader.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/umi/umi.cpp
+        ClipUmiMain.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/SeqReader/SeqReader.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Umi/Umi.cpp
         )
 
 target_link_libraries(clip_umi
