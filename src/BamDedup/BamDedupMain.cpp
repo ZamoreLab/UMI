@@ -8,7 +8,7 @@ void usage(char *name) {
             "\nusage:\n"
             "%s \n"
             "\t-h\tShow help message\n"
-            "\t-i\tInput bam file\n"
+            "\t-i\tInput bam file, need to be sorted by coordinate while having left and right reads together\n"
             "\t-o\tOutput bam file\n"
             "\t-l\tLength of UMI\n"
             , name
@@ -40,15 +40,13 @@ int main(int argc, char **argv) {
         }
     }
     BamPeDedupper d(infile, outfile, umi_len);
-    int t = 0, w = 0;
-    while (d.NextAligned()) ++t;
-    w = d.Write();
+    auto tw = d.Run();
     fprintf(stderr, "total_pairs:\t%d\n"
             "output_pairs:\t%d\n"
             "duplication_rate:\t%.3f\n"
-            , t
-            , w
-            , double(t - w) / t
+            , tw.first
+            , tw.second
+            , double(tw.first - tw.second) / tw.first
     );
     return 0;
 }

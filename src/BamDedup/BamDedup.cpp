@@ -1,32 +1,28 @@
-#include <htslib/sam.h>
 #include "BamDedup.hpp"
-#include <iostream>
+#include <utility>
 
-
-
-
-
-BamPeDedupper::BamPeDedupper(const char *filename, const char *outname, int l)
+BamPeDedupper::BamPeDedupper(const char *filename, const char *outname, int l, Dedupper::Methods m)
     : BamFilePeReader(filename)
       , umilen_(l) {
     if (outname) {
         out_ = sam_open(outname, "wb");
         good_ = sam_hdr_write(out_, header_) == 0;
     }
+    dedupper_ = Dedupper::Generate(m);
 }
 
 BamPeDedupper::BamPeDedupper(BamPeDedupper&& other)
     :
     base(std::move(other))
     , umilen_(other.umilen_) {
-    rec_.swap(other.rec_);
+    std::swap(dedupper_, other.dedupper_);
     std::swap(out_, other.out_);
 }
 
 BamPeDedupper& BamPeDedupper::operator=(BamPeDedupper&& other) {
     if (this != &other) {
         base::operator=(std::move(other));
-        rec_.swap(other.rec_);
+        std::swap(dedupper_, other.dedupper_);
         std::swap(out_, other.out_);
         umilen_ = other.umilen_;
     }
@@ -35,10 +31,11 @@ BamPeDedupper& BamPeDedupper::operator=(BamPeDedupper&& other) {
 
 BamPeDedupper::~BamPeDedupper() {
     sam_close(out_);
-    for (auto& i : rec_) {
-        bam_destroy1(i.second.first), i.second.first = nullptr;
-        bam_destroy1(i.second.second), i.second.second = nullptr;
-    }
+}
+
+void BamPeDedupper::ResetDedupMethod(Dedupper::Methods m) {
+    delete dedupper_, dedupper_ = nullptr;
+    dedupper_ = Dedupper::Generate(m);
 }
 
 bool BamPeDedupper::IsSameRead() const {
@@ -51,60 +48,51 @@ bool BamPeDedupper::IsSameRead() const {
     return true;
 }
 
-int BamPeDedupper::Write() {
+template <class Iterator>
+int BamPeDedupper::Write(Iterator b, Iterator e) {
     int k = 0;
-    for (const auto& i : rec_) {
-        bam1_t *b1 = i.second.first;
-        bam1_t *b2 = i.second.second;
-        if (sam_write1(out_, header_, b1) >= 0
-            && sam_write1(out_, header_, b2) >= 0)
-            ++k;
+    for (Iterator i = b; i != e; ++i) {
+        k += sam_write1(out_, header_, i->first) >= 0 && sam_write1(out_, header_, i->second) >= 0;
     }
     return k;
 }
 
-bool BamPeDedupper::NextAligned() {
-    bool ret = BamFilePeReader::NextAligned();
-    if (ret) {
-        char *s1 = bam_get_qname(b1_);
-        while (*s1++ != '_');
-        char *s2 = bam_get_qname(b2_);
-        while (*s2++ != '_');
-        Coordinate c{
-            _GetStart(b1_)
-            , GetChr()
-            , std::string{s1, s1 + umilen_}
-            , std::string{s2, s2 + umilen_}
-        };
-        auto e = rec_.find(c);
-        if (e != rec_.end()) {
-            // need to decide which one is better
-            if (_BamQualCmp(b1_, b2_, e->second.first, e->second.second)) {
-                std::swap(b1_, e->second.first), std::swap(b2_, e->second.second);
-            }
-        } else {
-            rec_[c] = std::make_pair(bam_dup1(b1_)
-                                     , bam_dup1(b2_)
-            );
+std::pair<int, int> BamPeDedupper::Run() {
+    std::pair<int, int> tw{0, 0};
+    int32_t previous_start = -1;
+    std::string previous_chr;
+    std::vector<std::pair<bam1_t *, bam1_t *>> inputs;
+    while (BamFilePeReader::NextAligned()) {
+        ++tw.first;
+
+        // make sure
+        if (previous_chr == BamFilePeReader::GetChr())
+            assert(previous_start <= BamFilePeReader::GetStart1()
+                       && "The input bam has to be sorted by the \1 while keeping the pair together");
+
+        //        if (previous_chr == BamFilePeReader::GetChr()
+        //            && previous_start > BamFilePeReader::GetStart1())
+        //            fprintf(stderr, "preivous position %d, current name %s\n", previous_start, GetName().c_str());
+        if (previous_chr != BamFilePeReader::GetChr()
+            || previous_start != BamFilePeReader::GetStart1()) {
+            // new position, need to pick the best one and output
+            // 1. analyze the last batch and report output
+            auto output = dedupper_->Pick(inputs, umilen_);
+            tw.second += Write(output.begin(), output.end());
+            // 2. clean up and get ready for next one
+            for (auto& p : inputs) bam_destroy1(p.first), bam_destroy1(p.second);
+            inputs.clear();
+            previous_chr = GetChr();
+            previous_start = GetStart1();
+            // 3. put in
         }
+        inputs.push_back(BamFilePeReader::MovePair());
     }
-    return ret;
-}
-
-bool BamPeDedupper::_BamQualCmp(bam1_t *a1, bam1_t *a2, bam1_t *b1, bam1_t *b2) {
-    int i{0}, q1{0}, q2{0};
-    uint8_t *s;
-    s = bam_get_qual(a1);
-    for (i = 0; i < a1->core.l_qseq; ++i, ++s) q1 += *s - 33;
-
-    s = bam_get_qual(a2);
-    for (i = 0; i < a2->core.l_qseq; ++i, ++s) q1 += *s - 33;
-
-    s = bam_get_qual(b1);
-    for (i = 0; i < b1->core.l_qseq; ++i, ++s) q2 += *s - 33;
-
-    s = bam_get_qual(b2);
-    for (i = 0; i < b2->core.l_qseq; ++i, ++s) q2 += *s - 33;
-
-    return q1 > q2;
+    // last write
+    auto output = dedupper_->Pick(inputs, umilen_);
+    tw.second += Write(output.begin(), output.end());
+    // last clean
+    for (auto& p : inputs) bam_destroy1(p.first), bam_destroy1(p.second);
+    inputs.clear();
+    return tw;
 }

@@ -27,12 +27,14 @@ TEST_F(BamDedupTest, ReaderInitialization) {
 
 
 TEST_F(BamDedupTest, AlignedCount) {
-    int i = 0;
-    while (deduper.NextAligned()) {
-        ++i;
-    }
-    EXPECT_EQ(i, 49064);
-    EXPECT_EQ(deduper.Write(), 48871);
+    //    int i = 0;
+    //    while (deduper.NextAligned()) {
+    //        ++i;
+    //    }
+    //    EXPECT_EQ(i, 49064);
+    auto p = deduper.Run();
+    EXPECT_EQ(p.first, 49064);
+    EXPECT_EQ(p.second, 48871);
 }
 
 int main(int argc, char **argv) {

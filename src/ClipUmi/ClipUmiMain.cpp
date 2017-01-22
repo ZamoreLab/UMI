@@ -1,7 +1,5 @@
 #include "SeqReader.hpp"
-#include "Umi.hpp"
-#include <zlib.h>
-#include <htslib/kseq.h>
+#include "UmiClipper.hpp"
 #include <getopt.h>
 
 void usage(char *name) {

@@ -345,7 +345,7 @@ bool BamFilePeReader::IsAlignedOppoStrand() const {
 
 bool BamFilePeReader::IsAppropriatelyAligned() const {
     return IsAligned()
-        && IsSameRead()
+//        && IsSameRead()
         && (b1_->core.flag & BAM_FREAD1) ^ (b2_->core.flag & BAM_FREAD1)
         && IsAlignedOppoStrand();
 }
@@ -361,3 +361,13 @@ void BamFilePeReader::SwapPair() {
     b2_ = swap;
 }
 
+std::pair<bam1_t *, bam1_t *> BamFilePeReader::GetPair() {
+    return std::pair<bam1_t *, bam1_t *>(b1_, b2_);
+}
+
+std::pair<bam1_t *, bam1_t *> BamFilePeReader::MovePair() {
+    std::pair<bam1_t *, bam1_t *> ret = std::make_pair(b1_, b2_);
+    b1_ = bam_init1();
+    b2_ = bam_init1();
+    return ret;
+}

@@ -3,6 +3,7 @@ add_executable(umiclip_test
         main.cpp
         ${${PROJECT_NAME}_SRC_DIR}/SeqReader/SeqReader.cpp
         ${${PROJECT_NAME}_SRC_DIR}/Umi/Umi.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Umi/UmiClipper.cpp
         )
 target_link_libraries(umiclip_test
         gtest gtest_main

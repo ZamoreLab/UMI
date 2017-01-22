@@ -5,30 +5,21 @@
 #include "SeqReader.hpp"
 #include <string.h>
 
-class UmiClipper
-    : public Reader {
-private:
-    using base = Reader;
-    using self = UmiClipper;
-
+class Umi {
 protected:
     int umi_len_ = 0;
-    int umi_pad_ = 0;
-    FILE* outfh_ = NULL;
-
+    int pad_len_ = 0;
 public:
-    UmiClipper(const char *, const char*, int, int);
+    Umi(int, int);
 
-    UmiClipper(const std::string&, const std::string&, int, int);
+    Umi(const Umi&) = delete;
 
-    UmiClipper(UmiClipper&&);
+    Umi(Umi&&);
 
-    UmiClipper& operator=(UmiClipper&&);
+    Umi& operator=(const Umi&) = delete;
 
-    ~UmiClipper();
+    Umi& operator=(Umi&&);
 
-    int Clip();
-
-    int Clip(char*, size_t l);
+    ~Umi();
 
 };

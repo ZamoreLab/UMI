@@ -211,6 +211,10 @@ public:
 
     void SwapPair();
 
+    std::pair<bam1_t *, bam1_t *> GetPair();
+
+    std::pair<bam1_t *, bam1_t *> MovePair();
+
     bool IsOverlapped() const { return GetEnd1() > GetStart2(); }
 
     int OverlapBy() const { return GetEnd1() - GetStart2(); }
