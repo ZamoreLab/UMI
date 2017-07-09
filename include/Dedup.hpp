@@ -4,6 +4,7 @@
 #include <htslib/sam.h>
 #include <unordered_map>
 #include <boost/functional/hash.hpp>
+#include "Kmer.hpp"
 
 class Dedupper {
 public:

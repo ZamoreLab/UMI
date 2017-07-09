@@ -25,7 +25,6 @@ Dedupper::~Dedupper() {
     delete comparer;
 }
 
-
 std::vector<Dedupper::value_type> UniqueDedupper::Pick(const std::vector<Dedupper::value_type>& inputs, int umilen) {
     std::vector<Dedupper::value_type> bests;
     std::string umi;

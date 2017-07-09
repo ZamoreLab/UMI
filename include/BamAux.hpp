@@ -14,6 +14,8 @@ struct BamPairCompare {
     virtual bool operator()(const std::pair<bam1_t *, bam1_t *>& l
                             , const std::pair<bam1_t *, bam1_t *>& r
                            ) = 0;
+
+    virtual ~BamPairCompare() {};
 };
 
 /* compare two bam pairs using their accumulated qualities */
@@ -22,8 +24,10 @@ struct BamPairCompareBySumQuality
     virtual bool operator()(const std::pair<bam1_t *, bam1_t *>& l
                             , const std::pair<bam1_t *, bam1_t *>& r
                            ) override;
+
+    virtual ~BamPairCompareBySumQuality() {}
 };
 
-BamPairCompare* GenerateBamPairCompare(BamPairCompareMethods);
+BamPairCompare *GenerateBamPairCompare(BamPairCompareMethods);
 
 std::string GetBamUmi(bam1_t *, int);

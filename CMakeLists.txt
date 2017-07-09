@@ -10,7 +10,7 @@ project(ZamoreUmiSeq CXX C)
 
 # compiler flags
 include(CheckCXXCompilerFlag)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y") # use C++14 for now
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14") # use C++14 for now
 check_cxx_compiler_flag("-Wno-unused-local-typedefs" HAS_NO_UNUSED_LOCAL_TYPEDEFS)
 if (HAS_NO_UNUSED_LOCAL_TYPEDEFS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
