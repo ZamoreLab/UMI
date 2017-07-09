@@ -1,26 +1,10 @@
 #pragma once
 
-#define _A 0b000
-#define _C 0b001
-#define _G 0b010
-#define _T 0b011
-#define _N 0b100
+#include <cstdint>
+#include <string>
 
-static uint8_t nt_to_bit[] = {
-    _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N
-    , _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N
-    , _N, _N, _N, _N, _N, _N, _N, _A, _N, _C, _N, _N, _N, _G, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _T, _N, _N
-    , _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _A, _N, _C, _N, _N, _N, _G, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N
-    , _T, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N, _N
-};
-
-#undef _A
-#undef _C
-#undef _G
-#undef _T
-#undef _N
-
-char bit_to_nt[] = "ACGT";
+extern const uint8_t nt_to_bit[128];
+extern const char bit_to_nt[4];
 
 template <bool L4, bool L8, bool L16, bool L32>
 struct _two_bit_selector;
@@ -45,6 +29,10 @@ struct _two_bit_selector<true, true, true, false> {
     using Type = uint64_t;
 };
 
+// explicitly disable the specialization of this class
+//template < >
+//struct _two_bit_selector<true, true, true, true> {};
+
 template <int T>
 struct TwoBitSize {
     static const bool l4 = T > 4;
@@ -54,10 +42,6 @@ struct TwoBitSize {
 
     using Type = typename _two_bit_selector<l4, l8, l16, l32>::Type;
 };
-
-// explicitly disable the specialization of this class
-//template < >
-//struct _two_bit_selector<true, true, true, true> {};
 
 template <int K>
 typename TwoBitSize<K>::Type CharString2TwoBit(const char *s) {
@@ -78,5 +62,3 @@ std::string TwoBit2String(typename TwoBitSize<K>::Type b) {
     }
     return ret;
 }
-
-// 11110100001111
