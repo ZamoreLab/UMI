@@ -1,6 +1,7 @@
 #include "SeqReader.hpp"
 #include "UmiClipper.hpp"
 #include <getopt.h>
+#include <seqan/align.h>
 
 void usage(char *name) {
     fprintf(stderr, "This script clip UMI and attach it to the header"

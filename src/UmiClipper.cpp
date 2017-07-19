@@ -37,21 +37,22 @@ UmiClipper::~UmiClipper() {
 }
 
 int UmiClipper::Clip() {
-    if (reader_base::Next()) {
-        while (seq_->seq.l <= umi_len_ + pad_len_) {
-            if (!reader_base::Next()) return 0;
-        }
-        return fprintf(outfh_, "@%s_"
-                "%.*s\n"
-                "%s\n"
-                "+\n"
-                "%s\n"
-                       , seq_->name.s
-                       , umi_len_, seq_->seq.s
-                       , seq_->seq.s + umi_len_ + pad_len_
-                       , seq_->qual.s + umi_len_ + pad_len_
-        );
-    } else return 0;
+
+//    if (reader_base::Next()) {
+//        while (seq_->seq.l <= umi_len_ + pad_len_) {
+//            if (!reader_base::Next()) return 0;
+//        }
+//        return fprintf(outfh_, "@%s_"
+//                "%.*s\n"
+//                "%s\n"
+//                "+\n"
+//                "%s\n"
+//                       , seq_->name.s
+//                       , umi_len_, seq_->seq.s
+//                       , seq_->seq.s + umi_len_ + pad_len_
+//                       , seq_->qual.s + umi_len_ + pad_len_
+//        );
+//    } else return 0;
 }
 
 int UmiClipper::Clip(char *outbuf, size_t l) {

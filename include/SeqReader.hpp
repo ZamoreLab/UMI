@@ -4,7 +4,11 @@
 #include <zlib.h>
 #include <htslib/kseq.h>
 
+#ifndef KSEQ_INIT_DONE
+#define KSEQ_INIT_DONE
 KSEQ_INIT(gzFile, gzread)
+
+#endif
 
 class Reader {
 protected:
@@ -26,7 +30,7 @@ public:
 
     Reader& operator=(Reader&&);
 
-    void Open(const char*);
+    void Open(const char *);
 
     bool IsGood() const noexcept;
 

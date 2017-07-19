@@ -5,15 +5,17 @@ SET(HEADER_FILES
         ${${PROJECT_NAME}_INCLUDE_DIR}/BamDedup.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/Utils.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/KernelColor.hpp
-
         )
 
 
 set(SOURCE_FILES
-#        ${${PROJECT_NAME}_SRC_DIR}/seq_reader/seq_reader.cpp
-#        ${${PROJECT_NAME}_SRC_DIR}/umi/umi.cpp
-#        ${${PROJECT_NAME}_SRC_DIR}/clip_umi/clip_umi.cpp
-#        ${${PROJECT_NAME}_SRC_DIR}/bam_reader/bam_reader.cpp
-#        ${${PROJECT_NAME}_SRC_DIR}/bam_dedup/bam_dedup.cpp
-#        ${${PROJECT_NAME}_SRC_DIR}/utils/utils.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamAux.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamDedup.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamReader.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Dedup.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/SeqReader.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/TwoBit.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Umi.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/UmiClipper.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Utils.cpp
         )

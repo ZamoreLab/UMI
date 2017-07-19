@@ -4,13 +4,13 @@ add_executable(bamdedup_test
         ${${PROJECT_NAME}_INCLUDE_DIR}/Dedup.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/BamDedup.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/BamAux.hpp
-
-        ${${PROJECT_NAME}_SRC_DIR}/Dedup/Dedup.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/BamAux/BamAux.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/BamReader/BamReader.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/BamDedup/BamDedup.cpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/Utils.hpp
-        ${${PROJECT_NAME}_SRC_DIR}/Utils/Utils.cpp
+
+        ${${PROJECT_NAME}_SRC_DIR}/Dedup.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamAux.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamReader.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/BamDedup.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Utils.cpp
         )
 target_link_libraries(bamdedup_test
         gtest

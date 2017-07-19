@@ -4,22 +4,30 @@
 #include <stdlib.h>
 #include "SeqReader.hpp"
 #include <string.h>
+#include <seqan/basic.h>
+#include <seqan/align.h>
 
+template <class UmiIdentifyPolicy>
 class Umi {
-protected:
-    int umi_len_ = 0;
-    int pad_len_ = 0;
+
 public:
-    Umi(int, int);
+    std::pair<int, int> IdentifyUmi(const char *read);
 
-    Umi(const Umi&) = delete;
+    Umi(int l)
+        : len_(l) {}
 
-    Umi(Umi&&);
-
-    Umi& operator=(const Umi&) = delete;
-
-    Umi& operator=(Umi&&);
-
-    ~Umi();
-
+protected:
+    int len_;
+    std::string seq_;
 };
+
+template <class UmiIdentifyPolicy>
+std::pair<int, int> Umi<UmiIdentifyPolicy>::IdentifyUmi(const char *read) {
+    return UmiIdentifyPolicy::IdentifyUmi(read, seq_.c_str());
+};
+
+
+struct UmiByAlignment {
+    static std::pair<int,int> IdentifyUmi(const char* read, const char* adpt);
+};
+

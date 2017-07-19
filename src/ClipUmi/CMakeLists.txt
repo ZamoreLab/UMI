@@ -5,9 +5,9 @@ add_executable(clip_umi
         ${${PROJECT_NAME}_INCLUDE_DIR}/UmiClipper.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/TwoBit.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/Kmer.hpp
-        ${${PROJECT_NAME}_SRC_DIR}/Umi/Umi.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/SeqReader/SeqReader.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/Umi/UmiClipper.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/Umi.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/SeqReader.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/UmiClipper.cpp
         )
 
 target_link_libraries(clip_umi
