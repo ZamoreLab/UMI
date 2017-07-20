@@ -3,10 +3,9 @@ add_executable(bam_sort
         ${${PROJECT_NAME}_INCLUDE_DIR}/BamReader.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/BamAux.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/Utils.hpp
-        ${${PROJECT_NAME}_SRC_DIR}/BamAux.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/BamReader.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/Utils.cpp
         )
+
+add_dependencies(bam_sort umilib)
 
 target_link_libraries(bam_sort
         ${htslib_LIBRARIES}
@@ -15,5 +14,7 @@ target_link_libraries(bam_sort
         )
 
 install(TARGETS bam_sort
-        RUNTIME DESTINATION ${${PROJECT_NAME}_BIN_DIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
         )

@@ -76,32 +76,33 @@ if (BUILD_TESTS)
 endif ()
 
 # install third-party binaries
-
+option(BUILD_PIPELINE "Build pipeline" OFF)
 # Bowtie2
-find_program(HAS_BOWTIE2 "bowtie2" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if (NOT HAS_BOWTIE2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    message(STATUS "${Yellow}CMaking optional target Bowtie2${ColourReset}")
-    include(cmake/bowtie2.cmake)
-endif ()
+if (BUILD_PIPELINE)
+    find_program(HAS_BOWTIE2 "bowtie2" HINTS ${${PROJECT_NAME}_BIN_DIR})
+    if (NOT HAS_BOWTIE2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
+        message(STATUS "${Yellow}CMaking optional target Bowtie2${ColourReset}")
+        include(cmake/bowtie2.cmake)
+    endif ()
 
-# samtools
-find_program(HAS_SAMTOOLS "samtools" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if (NOT HAS_SAMTOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    message(STATUS "${Yellow}CMaking optional target Samtools${ColourReset}")
-    include(cmake/samtools.cmake)
-endif ()
+    # samtools
+    find_program(HAS_SAMTOOLS "samtools" HINTS ${${PROJECT_NAME}_BIN_DIR})
+    if (NOT HAS_SAMTOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
+        message(STATUS "${Yellow}CMaking optional target Samtools${ColourReset}")
+        include(cmake/samtools.cmake)
+    endif ()
 
-# macs2
-find_program(HAS_MACS2 "macs2" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if (NOT HAS_MACS2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    message(STATUS "${Yellow}CMaking optional target MACS2${ColourReset}")
-    include(cmake/macs2.cmake)
-endif ()
+    # macs2
+    find_program(HAS_MACS2 "macs2" HINTS ${${PROJECT_NAME}_BIN_DIR})
+    if (NOT HAS_MACS2 AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
+        message(STATUS "${Yellow}CMaking optional target MACS2${ColourReset}")
+        include(cmake/macs2.cmake)
+    endif ()
 
-# umitools
-find_program(HAS_UMITOOLS "umi_tools" HINTS ${${PROJECT_NAME}_BIN_DIR})
-if (NOT HAS_UMITOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    message(STATUS "${Yellow}CMaking optional target umi-tools${ColourReset}")
-    include(cmake/umitools.cmake)
-endif ()
-
+    # umitools
+    find_program(HAS_UMITOOLS "umi_tools" HINTS ${${PROJECT_NAME}_BIN_DIR})
+    if (NOT HAS_UMITOOLS AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
+        message(STATUS "${Yellow}CMaking optional target umi-tools${ColourReset}")
+        include(cmake/umitools.cmake)
+    endif ()
+ENDIF ()

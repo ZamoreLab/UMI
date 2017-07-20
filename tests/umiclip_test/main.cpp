@@ -1,6 +1,7 @@
 #include <string>
 #include "gtest/gtest.h"
-#include "UmiClipper.hpp"
+//#include "UmiClipper.hpp"
+#include "Umi.hpp"
 #include "data.hpp"
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,25 +11,37 @@ namespace {
 class UmiClipTest
     : public ::testing::Test {
 protected:
-    UmiClipTest()
-        :
-        c(tests::TestTinyFastqFile.c_str(), "/dev/stdout", 5, 3) {
+    UmiClipTest() {
     }
 
-    UmiClipper c;
+    std::string read = "ACATGCATCGTACGATCGTAGCTACGATCA";
+    std::string badread = "ACATGCATCGTACCATCCATCAGTCGATCGAC";
+    std::string adpt = "ATCGNNNNTACGA";
 };
 
 
-TEST_F(UmiClipTest, tiny) {
-    char *buf = (char *) malloc(1024);
-    EXPECT_EQ(c.Clip(buf, 1024), 71);
-    EXPECT_TRUE(strcmp(buf, "@test1_AGCTC\nCGTAGCTAGCTAGCTAGCTAGCATCGA\n+\nIIIIIIIIIIIIIIIIIIIIIIIIIII\n") == 0);
+TEST_F(UmiClipTest, UmiByAlignment) {
+    int start, end;
+    std::tie(start, end) = UmiByAlignment::IdentifyUmi(read.c_str(), adpt.c_str());
+    EXPECT_EQ(start, 18);
+    EXPECT_EQ(end, 22);
+    EXPECT_EQ(read.substr(start, end - start), "TAGC");
 }
 
-TEST_F(UmiClipTest, tiny2) {
-    EXPECT_EQ(c.Clip(), 71);
+TEST_F(UmiClipTest, UmiByAlignment2) {
+    int start, end;
+    std::tie(start, end) = UmiByAlignment::IdentifyUmi(badread.c_str(), adpt.c_str());
+    EXPECT_EQ(start, 0);
+    EXPECT_EQ(end, 0);
 }
 
+
+TEST_F(UmiClipTest, UmiByPosition) {
+    int start, end;
+    std::tie(start, end) = UmiByPosition::IdentifyUmi(read.c_str(), adpt.c_str());
+    EXPECT_EQ(start, 4);
+    EXPECT_EQ(end, 8);
+}
 
 } // namespace
 

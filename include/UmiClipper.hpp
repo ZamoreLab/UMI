@@ -6,7 +6,7 @@
 
 class UmiClipper
     : public Reader
-      , public Umi {
+      , public Umi<UmiByAlignment> {
 private:
     using reader_base = Reader;
     using umi_base = Umi;
@@ -14,11 +14,10 @@ private:
 
 protected:
     FILE *outfh_ = NULL;
-
 public:
-    UmiClipper(const char *, const char *, int, int);
+    UmiClipper(const char *, const char *, const char*);
 
-    UmiClipper(const std::string&, const std::string&, int, int);
+    UmiClipper(const std::string&, const std::string&, const std::string&);
 
     UmiClipper(UmiClipper&&);
 
@@ -27,7 +26,5 @@ public:
     ~UmiClipper();
 
     int Clip();
-
-    int Clip(char *, size_t l);
 
 };

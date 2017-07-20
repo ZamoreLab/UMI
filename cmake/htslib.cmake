@@ -8,8 +8,8 @@ ExternalProject_Add(${MyName}
         GIT_REPOSITORY ${MyGithubAddress}
         BUILD_IN_SOURCE ON
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND make lib-static
-        INSTALL_COMMAND make install prefix=${${MyName}_INSTALL}
+        BUILD_COMMAND make
+        INSTALL_COMMAND make install prefix=${CMAKE_INSTALL_PREFIX}
         LOG_DOWNLOAD ON
         )
 
@@ -18,7 +18,7 @@ if (NOT ZLIB_FOUND)
 endif ()
 
 if (APPLE)
-    set(htslib_LIBRARIES ${${PROJECT_NAME}_LIB_DIR}/libhts.dylib)
+    set(htslib_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/libhts.dylib)
 else ()
-    set(htslib_LIBRARIES ${${PROJECT_NAME}_LIB_DIR}/libhts.a)
+    set(htslib_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/libhts.a)
 endif ()

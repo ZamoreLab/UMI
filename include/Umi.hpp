@@ -13,21 +13,23 @@ class Umi {
 public:
     std::pair<int, int> IdentifyUmi(const char *read);
 
-    Umi(int l)
-        : len_(l) {}
+    Umi(const char *s)
+        : pattern_(s) {}
 
 protected:
-    int len_;
-    std::string seq_;
+    std::string pattern_;
 };
 
 template <class UmiIdentifyPolicy>
 std::pair<int, int> Umi<UmiIdentifyPolicy>::IdentifyUmi(const char *read) {
-    return UmiIdentifyPolicy::IdentifyUmi(read, seq_.c_str());
+    return UmiIdentifyPolicy::IdentifyUmi(read, pattern_.c_str());
 };
 
 
 struct UmiByAlignment {
-    static std::pair<int,int> IdentifyUmi(const char* read, const char* adpt);
+    static std::pair<int, int> IdentifyUmi(const char *read, const char *adpt);
 };
 
+struct UmiByPosition {
+    static std::pair<int, int> IdentifyUmi(const char *read, const char *adpt);
+};

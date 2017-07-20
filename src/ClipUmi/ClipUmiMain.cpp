@@ -1,7 +1,7 @@
 #include "SeqReader.hpp"
 #include "UmiClipper.hpp"
 #include <getopt.h>
-#include <seqan/align.h>
+#include <string>
 
 void usage(char *name) {
     fprintf(stderr, "This script clip UMI and attach it to the header"
@@ -10,18 +10,18 @@ void usage(char *name) {
             "\t-h\tShow help message\n"
             "\t-i\tInput fastq file\n"
             "\t-o\tOutput fastq file\n"
-            "\t-l\tLength of UMI\n"
-            "\t-p\tLength of UMI padding\n"
+            "\t-p\tUMI adaptor pattern, use N for UMI, such as AAGGTTCANNNNNNNNNNNNGGG\n"
             , name
     );
 }
 
 int main(int argc, char **argv) {
-    int c, umi_len = 0, umi_pad = 0;
+    int c;
     char fstdin[] = "/dev/stdin";
     char fstdout[] = "/dev/stdout";
     char *infile = fstdin, *outfile = fstdout;
-    while ((c = getopt(argc, argv, "i:o:l:p:h")) != -1) {
+    std::string umi_pattern;
+    while ((c = getopt(argc, argv, "i:o:p:h")) != -1) {
         switch (c) {
             case 'i':
                 infile = optarg;
@@ -29,11 +29,8 @@ int main(int argc, char **argv) {
             case 'o':
                 outfile = optarg;
                 break;
-            case 'l':
-                umi_len = atoi(optarg);
-                break;
             case 'p':
-                umi_pad = atoi(optarg);
+                umi_pattern = optarg;
                 break;
             case 'h':
                 usage(argv[0]);
@@ -44,7 +41,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    UmiClipper clipper(infile, outfile, umi_len, umi_pad);
+    UmiClipper clipper(infile, outfile, umi_pattern.c_str());
     if (!clipper.IsGood()) {
         fprintf(stderr, "Cannot create UmiClipper, please check %s and %s\n", infile, outfile);
         goto err;

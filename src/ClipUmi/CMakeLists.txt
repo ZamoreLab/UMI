@@ -5,17 +5,18 @@ add_executable(clip_umi
         ${${PROJECT_NAME}_INCLUDE_DIR}/UmiClipper.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/TwoBit.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/Kmer.hpp
-        ${${PROJECT_NAME}_SRC_DIR}/Umi.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/SeqReader.cpp
-        ${${PROJECT_NAME}_SRC_DIR}/UmiClipper.cpp
         )
 
+add_dependencies(clip_umi umilib htslib)
+
 target_link_libraries(clip_umi
-        ${htslib_LIBRARIES}
         ${ZLIB_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
+        umilib
         )
 
 install(TARGETS clip_umi
-        RUNTIME DESTINATION ${${PROJECT_NAME}_BIN_DIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
         )
