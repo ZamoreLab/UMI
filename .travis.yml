@@ -20,6 +20,9 @@ before_script:
 
 script:
   - cd build && cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=.. ..
+  - make
+  - make test
+  - make install
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
