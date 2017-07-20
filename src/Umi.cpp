@@ -45,7 +45,10 @@ std::tuple<int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const ch
     #else
     int score = globalAlignment(alignment
                                 , scoringScheme
-                                , AlignConfig<true
+                                , AlignConfig<false   /* top row of the DP matrix is not free
+                                                       *  aka (alignment starting from the middle of the query will be penalized)
+                                                       *  aka penalized for insertion on the left of the adaptor
+                                                       *  aka force alignment to the left */
                                               , true
                                               , true
                                               , true>{} /* free-end alignment, no penalties for gap at the ends */
@@ -54,6 +57,7 @@ std::tuple<int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const ch
     #endif
     std::tuple<int, int, int> ret{0, 0, 0};
 
+    #define DEBUG
     #ifdef DEBUG
     std::cerr << alignment << '\n'
               << score << '\n'
