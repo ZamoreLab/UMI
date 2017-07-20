@@ -1,12 +1,11 @@
 machine:
   pre: 
     - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-    - sudo add-apt-repository -y ppa:boost-latest/ppa
     - sudo add-apt-repository -y ppa:george-edison55/cmake-3.x
     - sudo apt-get remove -qq cmake cmake-data
     - sudo apt-get autoremove -qq
     - sudo apt-get update -y -qq
-    - sudo apt-get install -y -qq g++-6 boost1.55 cmake-data cmake zlib1g-dev
+    - sudo apt-get install -y -qq g++-6 libboost-all-dev cmake-data cmake zlib1g-dev
     - sudo update-alternatives --install /usr/bin/g++  g++  /usr/bin/g++-6  90
     - sudo update-alternatives --install /usr/bin/gcc  gcc  /usr/bin/gcc-6  90
     - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90
