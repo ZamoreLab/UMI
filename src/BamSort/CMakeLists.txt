@@ -11,6 +11,7 @@ target_link_libraries(bam_sort
         ${htslib_LIBRARIES}
         ${ZLIB_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
+        umilib
         )
 
 install(TARGETS bam_sort
