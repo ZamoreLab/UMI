@@ -36,22 +36,26 @@ UmiClipper::~UmiClipper() {
     fclose(outfh_);
 }
 
-int UmiClipper::Clip() {
+bool UmiClipper::Clip() {
     std::string umi;
     int start_pos, end_pos;
     if (reader_base::Next()) {
         std::tie(start_pos, end_pos) = umi_base::IdentifyUmi(seq_->seq.s);
         if (start_pos != end_pos) {
-            return fprintf(outfh_, "@%s_"
+            fprintf(outfh_, "@%s_"
                     "%.*s\n"
                     "%s\n"
                     "+\n"
                     "%s\n"
-                           , seq_->name.s
-                           , end_pos - start_pos, seq_->seq.s
-                           , seq_->seq.s + end_pos
-                           , seq_->qual.s + end_pos
+                    , seq_->name.s
+                    , end_pos - start_pos, seq_->seq.s
+                    , seq_->seq.s + end_pos
+                    , seq_->qual.s + end_pos
             );
-        } else return 0;
-    } else return 0;
+            return true;
+        } else return false;
+    } else {
+        good_ = false;
+        return false;
+    }
 }

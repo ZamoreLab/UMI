@@ -19,7 +19,7 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON ..
+  - cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON ..
 
 script:
   - make -j 1

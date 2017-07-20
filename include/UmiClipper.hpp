@@ -25,6 +25,6 @@ public:
 
     ~UmiClipper();
 
-    int Clip();
+    bool Clip();
 
 };

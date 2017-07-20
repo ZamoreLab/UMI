@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Cannot create UmiClipper, please check %s and %s\n", infile, outfile);
         goto err;
     }
-    while (clipper.Clip());
+    while (clipper.IsGood()) clipper.Clip();
     return 0;
 
     err:
