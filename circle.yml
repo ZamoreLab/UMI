@@ -15,7 +15,5 @@ checkout:
         - git submodule update --init --recursive
 
 test:
-    pre:
-        - mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON ..
     override:
-        - cd build && make && make test && make install
+        - mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=..  ..

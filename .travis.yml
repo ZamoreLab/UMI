@@ -17,16 +17,13 @@ before_install:
 
 before_script:
   - mkdir build
-  - cd build
-  - cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON ..
 
 script:
-  - make -j 1
-  - make test
+  - cd build && cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=.. ..
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  
+
 branches:
   only:
     - master
