@@ -15,6 +15,8 @@ check_cxx_compiler_flag("-Wno-unused-local-typedefs" HAS_NO_UNUSED_LOCAL_TYPEDEF
 if (HAS_NO_UNUSED_LOCAL_TYPEDEFS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
 endif ()
+SET(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # determine the version
 foreach (level MAJOR MINOR PATCH)
