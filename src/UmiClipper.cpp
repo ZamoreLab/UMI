@@ -38,19 +38,19 @@ UmiClipper::~UmiClipper() {
 
 bool UmiClipper::Clip() {
     std::string umi;
-    int start_pos, end_pos;
+    int umi_start, umi_end, ist_start;
     if (reader_base::Next()) {
-        std::tie(start_pos, end_pos) = umi_base::IdentifyUmi(seq_->seq.s);
-        if (start_pos != end_pos) {
+        std::tie(umi_start, umi_end, ist_start) = umi_base::IdentifyUmi(seq_->seq.s);
+        if (umi_start != umi_end) {
             fprintf(outfh_, "@%s_"
                     "%.*s\n"
                     "%s\n"
                     "+\n"
                     "%s\n"
                     , seq_->name.s
-                    , end_pos - start_pos, seq_->seq.s
-                    , seq_->seq.s + end_pos
-                    , seq_->qual.s + end_pos
+                    , umi_end - umi_start, seq_->seq.s
+                    , seq_->seq.s + ist_start
+                    , seq_->qual.s + ist_start
             );
             return true;
         } else return false;

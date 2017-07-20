@@ -30,7 +30,7 @@ struct ScoringMatrixData_<int, Dna5, NAsMatchMatrix> {
 }
 
 
-std::pair<int, int> UmiByAlignment::IdentifyUmi(const char *read, const char *adpt) {
+std::tuple<int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const char *adpt) {
     using namespace seqan;
     static const int MatchScore = ScoringMatrixData_<int, Dna5, NAsMatchMatrix>::getData()[0];
     static const int MisMatchScore = ScoringMatrixData_<int, Dna5, NAsMatchMatrix>::getData()[1];
@@ -52,7 +52,7 @@ std::pair<int, int> UmiByAlignment::IdentifyUmi(const char *read, const char *ad
                                 , AffineGaps()
     );
     #endif
-    std::pair<int, int> ret{0, 0};
+    std::tuple<int, int, int> ret{0, 0, 0};
 
     #ifdef DEBUG
     std::cerr << alignment << '\n'
@@ -64,16 +64,19 @@ std::pair<int, int> UmiByAlignment::IdentifyUmi(const char *read, const char *ad
 
     int i = 0;
     while (row(alignment, 1)[i] != 'N') ++i;
-    ret.first = i;
+    std::get<0>(ret) = i;
     while (row(alignment, 1)[++i] == 'N');
-    ret.second = i;
+    std::get<1>(ret) = i--;
+    while (row(alignment, 1)[++i] != '-');
+    std::get<2>(ret) = i;
     return ret;
 }
 
-std::pair<int, int> UmiByPosition::IdentifyUmi(const char *read, const char *adpt) {
-    std::pair<int, int> ret(0, 0);
-    while (*adpt != 'N') ++adpt, ++ret.first;
-    ret.second = ret.first;
-    while (*adpt == 'N') ++adpt, ++ret.second;
+std::tuple<int, int, int> UmiByPosition::IdentifyUmi(const char *read, const char *adpt) {
+    std::tuple<int, int, int> ret{0, 0, 0};
+    std::get<2>(ret) = static_cast<int>(strlen(adpt));
+    while (*adpt != 'N') ++adpt, ++std::get<0>(ret);
+    std::get<1>(ret) = std::get<0>(ret);
+    while (*adpt == 'N') ++adpt, ++std::get<1>(ret);
     return ret;
 }
