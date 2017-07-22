@@ -17,12 +17,7 @@ before_install:
   - sudo update-alternatives --install /usr/bin/gcc  gcc  /usr/bin/gcc-6  90
   - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90
 
-before_script:
-  - mkdir build
-
 script:
-  - cd build
-  - cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=..  ..
   - make -j 1
 
 after_success:

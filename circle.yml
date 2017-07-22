@@ -16,8 +16,4 @@ checkout:
 
 test:
     override:
-        - mkdir -p build 
-        - cd build
-        - cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=..  ..
         - make
-        - make install
