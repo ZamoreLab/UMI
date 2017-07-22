@@ -5,7 +5,7 @@ machine:
     - sudo apt-get remove -qq cmake cmake-data
     - sudo apt-get autoremove -qq
     - sudo apt-get update -y -qq
-    - sudo apt-get install -y -qq g++-6 libboost-all-dev cmake-data cmake zlib1g-dev
+    - sudo apt-get install -y -qq g++-6 libboost-all-dev cmake-data cmake zlib1g-dev libtbb-dev
     - sudo update-alternatives --install /usr/bin/g++  g++  /usr/bin/g++-6  90
     - sudo update-alternatives --install /usr/bin/gcc  gcc  /usr/bin/gcc-6  90
     - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90
@@ -16,7 +16,8 @@ checkout:
 
 test:
     override:
-        - mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=..  ..
+        - mkdir -p build 
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=DEBUG -DBUILD_TESTS=ON -DBUILD_PIPELINE=ON -DCMAKE_INSTALL_PREFIX=..  ..
         - make
-        - make test
         - make install
