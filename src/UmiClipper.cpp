@@ -38,9 +38,9 @@ UmiClipper::~UmiClipper() {
 
 bool UmiClipper::Clip() {
     std::string umi;
-    int umi_start, umi_end, ist_start;
+    int umi_start, umi_end, ist_start, ist_end;
     if (reader_base::Next()) {
-        std::tie(umi_start, umi_end, ist_start) = umi_base::IdentifyUmi(seq_->seq.s);
+        std::tie(umi_start, umi_end, ist_start, ist_end) = umi_base::IdentifyUmi(seq_->seq.s);
         if (umi_start != umi_end) {
             fprintf(outfh_, "@%s_"
                     "%.*s\n"

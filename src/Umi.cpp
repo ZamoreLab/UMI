@@ -29,8 +29,11 @@ struct ScoringMatrixData_<int, Dna5, NAsMatchMatrix> {
 #undef X
 }
 
+std::tuple<int, int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const char *adpt) {
+    return IdentifyFivePrimeUmi(read, adpt);
+};
 
-std::tuple<int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const char *adpt) {
+std::tuple<int, int, int, int> UmiByAlignment::IdentifyFivePrimeUmi(const char *read, const char *adpt) {
     using namespace seqan;
     static const int MatchScore = ScoringMatrixData_<int, Dna5, NAsMatchMatrix>::getData()[0];
     static const int MisMatchScore = ScoringMatrixData_<int, Dna5, NAsMatchMatrix>::getData()[1];
@@ -45,17 +48,11 @@ std::tuple<int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const ch
     #else
     int score = globalAlignment(alignment
                                 , scoringScheme
-                                , AlignConfig<false   /* top row of the DP matrix is not free
-                                                       *  aka (alignment starting from the middle of the query will be penalized)
-                                                       *  aka penalized for insertion on the left of the adaptor
-                                                       *  aka force alignment to the left */
-                                              , true
-                                              , true
-                                              , true>{} /* free-end alignment, no penalties for gap at the ends */
+                                , FivePrimeFavorAlignConfig{}
                                 , AffineGaps()
     );
     #endif
-    std::tuple<int, int, int> ret{0, 0, 0};
+    std::tuple<int, int, int, int> ret{0, 0, 0, 0};
 
     #define DEBUG
     #ifdef DEBUG
@@ -67,18 +64,90 @@ std::tuple<int, int, int> UmiByAlignment::IdentifyUmi(const char *read, const ch
     if (score<(MatchScore * strlen(adpt)) + (MaxMisMatchAllowed * MisMatchScore)) return ret;
 
     int i = 0;
+    //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
+    //                                      |||||
+    //        --------------------NNNNNNNNNNTACGA-----------------------
+    //                            i
     while (row(alignment, 1)[i] != 'N') ++i;
     std::get<0>(ret) = i;
+    //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
+    //                                      |||||
+    //        --------------------NNNNNNNNNNTACGA-----------------------
+    //                                      i
     while (row(alignment, 1)[++i] == 'N');
     std::get<1>(ret) = i--;
+    //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
+    //                                      |||||
+    //        --------------------NNNNNNNNNNTACGA-----------------------
+    //                                           i
     while (row(alignment, 1)[++i] != '-');
     std::get<2>(ret) = i;
+
+    std::get<3>(ret) = strlen(read);
+
     return ret;
 }
 
-std::tuple<int, int, int> UmiByPosition::IdentifyUmi(const char *read, const char *adpt) {
-    std::tuple<int, int, int> ret{0, 0, 0};
+std::tuple<int, int, int, int> UmiByAlignment::IdentifyThreePrimeUmi(const char *read, const char *adpt) {
+    using namespace seqan;
+    static const int MatchScore = ScoringMatrixData_<int, Dna5, NAsMatchMatrix>::getData()[0];
+    static const int MisMatchScore = ScoringMatrixData_<int, Dna5, NAsMatchMatrix>::getData()[1];
+    static const int MaxMisMatchAllowed = 3;
+    Align<Dna5String, ArrayGaps> alignment;
+    resize(rows(alignment), 2);
+    assignSource(row(alignment, 0), read);
+    assignSource(row(alignment, 1), adpt);
+    Score<int, ScoreMatrix<Dna5, NAsMatchMatrix> > scoringScheme(-1, -3); /* gap ext and gap open */
+    #ifdef USE_LOCAL_ALIGNMENT
+    int score = localAlignment(alignment, scoringScheme, DynamicGaps());
+    #else
+    int score = globalAlignment(alignment
+                                , scoringScheme
+                                , ThreePrimeFavorAlignConfig{}
+                                , AffineGaps()
+    );
+    #endif
+    std::tuple<int, int, int, int> ret{0, 0, 0, 0};
+
+//    #define DEBUG
+    #ifdef DEBUG
+    std::cerr << alignment << '\n'
+              << score << '\n'
+              << MatchScore * strlen(adpt) + MaxMisMatchAllowed * MisMatchScore
+              << "\n------\n";
+    #endif
+    if (score<(MatchScore * strlen(adpt)) + (MaxMisMatchAllowed * MisMatchScore)) return ret;
+
+    int i = 0;
+    //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
+    //                                      |||||
+    //        --------------------NNNNNNNNNNTACGA-----------------------
+    //                            i
+    while (row(alignment, 1)[i] != 'N') ++i;
+    std::get<0>(ret) = i;
+
+    //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
+    //                                      |||||
+    //        --------------------NNNNNNNNNNTACGA-----------------------
+    //                                      i
+    while (row(alignment, 1)[++i] == 'N');
+    std::get<1>(ret) = i--;
+    //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
+    //                                      |||||
+    //        --------------------NNNNNNNNNNTACGA-----------------------
+    //                                           i
+    while (row(alignment, 1)[++i] != '-');
+    std::get<2>(ret) = i;
+
+    std::get<3>(ret) = strlen(read);
+
+    return ret;
+}
+
+std::tuple<int, int, int, int> UmiByPosition::IdentifyUmi(const char *read, const char *adpt) {
+    std::tuple<int, int, int, int> ret{0, 0, 0, 0};
     std::get<2>(ret) = static_cast<int>(strlen(adpt));
+    std::get<3>(ret) = static_cast<int>(strlen(read));
     while (*adpt != 'N') ++adpt, ++std::get<0>(ret);
     std::get<1>(ret) = std::get<0>(ret);
     while (*adpt == 'N') ++adpt, ++std::get<1>(ret);

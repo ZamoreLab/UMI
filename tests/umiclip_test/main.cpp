@@ -40,19 +40,28 @@ protected:
 //    EXPECT_EQ(ist_start, 0);
 //}
 
-
-TEST_F(UmiClipTest, UmiByAlignment3) {
-    int umi_start, umi_end, ist_start;
-    std::tie(umi_start, umi_end, ist_start) = UmiByAlignment::IdentifyUmi(read2.c_str(), adpt2.c_str());
+TEST_F(UmiClipTest, UmiByAlignment5) {
+    int umi_start, umi_end, ist_start, ist_end;
+    std::tie(umi_start, umi_end, ist_start, ist_end) = UmiByAlignment::IdentifyUmi(read2.c_str(), adpt2.c_str());
     EXPECT_EQ(umi_start, 0);
     EXPECT_EQ(umi_end, 10);
     EXPECT_EQ(ist_start, 15);
     EXPECT_EQ(read2.substr(umi_start, umi_end - umi_start), "AGTAGCTAGT");
 }
 
+TEST_F(UmiClipTest, UmiByAlignment3) {
+    int umi_start, umi_end, ist_start, ist_end;
+    std::tie(umi_start, umi_end, ist_start, ist_end) = UmiByAlignment::IdentifyThreePrimeUmi(read2.c_str(), adpt2.c_str());
+    EXPECT_EQ(umi_start, 20);
+    EXPECT_EQ(umi_end, 30);
+    EXPECT_EQ(ist_start, 35);
+    EXPECT_EQ(ist_end, 38);
+    EXPECT_EQ(read2.substr(umi_start, umi_end - umi_start), "TAGTACGAAC");
+}
+
 TEST_F(UmiClipTest, UmiByPosition) {
-    int umi_start, umi_end, ist_start;
-    std::tie(umi_start, umi_end, ist_start) = UmiByPosition::IdentifyUmi(read.c_str(), adpt.c_str());
+    int umi_start, umi_end, ist_start, ist_end;
+    std::tie(umi_start, umi_end, ist_start, ist_end) = UmiByPosition::IdentifyUmi(read.c_str(), adpt.c_str());
     EXPECT_EQ(umi_start, 4);
     EXPECT_EQ(umi_end, 8);
     EXPECT_EQ(ist_start, 13);
