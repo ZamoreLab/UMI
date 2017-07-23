@@ -40,7 +40,6 @@ include(cmake/color.cmake)
 message(STATUS "${Green}CMaking ${PROJECT_NAME} v${PROJECT_VERSION}${ColourReset}")
 
 include(ExternalProject)
-include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
 
 # thread
 find_package(Threads)
@@ -62,7 +61,6 @@ include(cmake/htslib.cmake)
 
 # add seqan
 add_subdirectory(seqan)
-include_directories(seqan/include)
 
 # install own binaries
 message(STATUS "${Green}CMaking ${PROJECT_NAME} binaries${ColourReset}")

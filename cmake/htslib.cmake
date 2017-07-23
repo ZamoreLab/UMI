@@ -22,3 +22,5 @@ if (APPLE)
 else ()
     set(htslib_LIBRARIES ${CMAKE_INSTALL_PREFIX}/lib/libhts.so)
 endif ()
+
+set(htslib_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include)

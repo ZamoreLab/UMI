@@ -1,10 +1,10 @@
-.idea/
-.vscode/
-/annotation/
+.idea
+.vscode
+/annotation
 build/
-/include/htslib/
 /lib/
-/share/
+/include
+/share
 /tests/include/data.hpp 
 /bin/htsfile
 /bin/bgzip
@@ -53,5 +53,7 @@ build/
 /bin/readlink
 /bin/clip_umi
 /bin/bam_dedup
+/bin/bam_sort
+/bin/python/
 /cmake-build-debug
-bin/python/
+
