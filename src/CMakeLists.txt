@@ -6,6 +6,15 @@ add_library(umilib
         ${umilib_SOURCE_FILES}
         )
 
+include_directories(umilib
+        PUBLIC
+        ${htslib_INCLUDE_DIR}
+        $<BUILD_INTERFACE:${CPPLIB_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include>
+        PRIVATE
+        ${seqan_INCLUDE_DIR}
+        )
+
 set_target_properties(umilib PROPERTIES
         PUBLIC_HEADER "${umilib_PUBLIC_HEADER_FILES}"
         )

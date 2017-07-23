@@ -61,6 +61,7 @@ include(cmake/htslib.cmake)
 
 # add seqan
 add_subdirectory(seqan)
+set(seqan_INCLUDE_DIR seqan/include)
 
 # install own binaries
 message(STATUS "${Green}CMaking ${PROJECT_NAME} binaries${ColourReset}")
