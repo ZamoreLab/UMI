@@ -14,8 +14,8 @@ This repository stores codes used to parse Illumina libraries made with unique m
 
 ```bash
 git clone --recursive git@github.com:ZamoreLab/UMI.git
-cd UMI && mkdir build && cd build
-cmake -DBUILD_TESTS=ON .. && make && make test && make install
+cd UMI
+make
 ```
 
 ## Usage

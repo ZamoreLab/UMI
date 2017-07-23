@@ -6,12 +6,13 @@ add_library(umilib
         ${umilib_SOURCE_FILES}
         )
 
-include_directories(umilib
+message(STATUS "seqan_INCLUDE_DIR: ${seqan_INCLUDE_DIR}")
+
+target_include_directories(umilib
         PUBLIC
         ${htslib_INCLUDE_DIR}
         $<BUILD_INTERFACE:${CPPLIB_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>
-        PRIVATE
         ${seqan_INCLUDE_DIR}
         )
 
@@ -27,6 +28,7 @@ target_link_libraries(umilib
         )
 
 install(TARGETS umilib
+        PUBLIC_HEADER DESTINATION include
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin
