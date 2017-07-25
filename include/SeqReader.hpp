@@ -4,13 +4,9 @@
 #include <zlib.h>
 #include <htslib/kseq.h>
 
-#ifndef KSEQ_INIT_DONE
-#define KSEQ_INIT_DONE
-KSEQ_INIT(gzFile, gzread)
-
-#endif
-
 class Reader {
+    KSEQ_INIT(gzFile, gzread)
+
 protected:
     gzFile gzfh_ = Z_NULL;
     kseq_t *seq_ = NULL;

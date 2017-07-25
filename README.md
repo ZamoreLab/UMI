@@ -7,7 +7,7 @@ This repository stores codes used to parse Illumina libraries made with unique m
 *Under development*
 
 ## Pre-requirement
-- Relative new C++ compiler (support C++11)
+- Relative new C++ compiler (support C++14)
 - Python2
 
 ## Installation
