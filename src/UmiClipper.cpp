@@ -59,3 +59,54 @@ bool UmiClipper::Clip() {
         return false;
     }
 }
+
+std::tuple<int, int, int, int> UmiClipper::Clip2() {
+    std::string umi;
+    if (reader_base::Next()) {
+        return umi_base::IdentifyUmi(seq_->seq.s);
+    }
+    return std::make_tuple(-1, -1, -1, -1);
+}
+
+void UmiClipper::Output(std::tuple<int, int, int, int> pos, FILE *out) {
+    if (out == nullptr) out = outfh_;
+    int umi_start, umi_end, ist_start, ist_end;
+    std::tie(umi_start, umi_end, ist_start, ist_end) = pos;
+    fprintf(out, "@%s_"
+            "%.*s\n"
+            "%s\n"
+            "+\n"
+            "%s\n"
+            , seq_->name.s
+            , umi_end - umi_start, seq_->seq.s
+            , seq_->seq.s + ist_start
+            , seq_->qual.s + ist_start
+    );
+}
+
+PairEndUmiClipper::PairEndUmiClipper(UmiClipper *l, UmiClipper *r)
+    :
+    lclipper_(l), rclipper_(r) {
+}
+
+bool PairEndUmiClipper::IsGood() {
+    return lclipper_->IsGood() && rclipper_->IsGood();
+}
+
+bool PairEndUmiClipper::Clip() {
+    int l_umi_start, l_umi_end, l_ist_start, l_ist_end;
+    int r_umi_start, r_umi_end, r_ist_start, r_ist_end;
+    auto lpos = lclipper_->Clip2();
+    auto rpos = rclipper_->Clip2();
+    std::tie(l_umi_start, l_umi_end, l_ist_start, l_ist_end) = lpos;
+    std::tie(r_umi_start, r_umi_end, r_ist_start, r_ist_end) = rpos;
+    if (l_umi_start != l_umi_end && r_umi_start != r_umi_end) {
+        /* only output if both are found */
+        lclipper_->Output(lpos);
+        rclipper_->Output(rpos);
+        return true;
+    } else {
+        return false;
+    }
+}
+

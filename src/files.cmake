@@ -5,6 +5,7 @@ set(umilib_PUBLIC_HEADER_FILES
         ${${PROJECT_NAME}_INCLUDE_DIR}/BamDedup.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/Utils.hpp
         ${${PROJECT_NAME}_INCLUDE_DIR}/KernelColor.hpp
+        ${${PROJECT_NAME}_INCLUDE_DIR}/UmiClipper.hpp
         )
 
 set(umilib_HEADER_FILES
