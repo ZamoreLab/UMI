@@ -90,8 +90,8 @@ int main(int argc, char **argv) {
                 lumi_pattern = rumi_pattern = umi_pattern;
             }
         }
-        UmiClipper lclilpper(lfqfile, loutfile, umi_pattern.c_str());
-        UmiClipper rclilpper(rfqfile, routfile, umi_pattern.c_str());
+        UmiClipper lclilpper(lfqfile, loutfile, lumi_pattern.c_str());
+        UmiClipper rclilpper(rfqfile, routfile, rumi_pattern.c_str());
         PairEndUmiClipper clipper(&lclilpper, &rclilpper);
         while (clipper.IsGood()) ++total, found += clipper.Clip();
     }

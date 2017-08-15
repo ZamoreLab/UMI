@@ -54,7 +54,7 @@ std::tuple<int, int, int, int> UmiByAlignment::IdentifyFivePrimeUmi(const char *
     #endif
     std::tuple<int, int, int, int> ret{0, 0, 0, 0};
 
-    #define DEBUG
+//    #define DEBUG
     #ifdef DEBUG
     std::cerr << alignment << '\n'
               << score << '\n'
