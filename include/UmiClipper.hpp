@@ -29,6 +29,8 @@ public:
 
     void Output(std::tuple<int, int, int, int>, FILE* f = nullptr);
 
+    void OutputUmi(std::tuple<int, int, int, int>, const char*, FILE* f = nullptr);
+
     std::tuple<int, int, int, int> Clip2();
 };
 

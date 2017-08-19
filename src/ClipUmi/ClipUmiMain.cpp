@@ -92,6 +92,10 @@ int main(int argc, char **argv) {
         }
         UmiClipper lclilpper(lfqfile, loutfile, lumi_pattern.c_str());
         UmiClipper rclilpper(rfqfile, routfile, rumi_pattern.c_str());
+        if (!lclilpper.IsGood() || !rclilpper.IsGood()) {
+            fprintf(stderr, "Cannot open input files %s or %s\n", lfqfile, rfqfile);
+            goto err;
+        }
         PairEndUmiClipper clipper(&lclilpper, &rclilpper);
         while (clipper.IsGood()) ++total, found += clipper.Clip();
     }

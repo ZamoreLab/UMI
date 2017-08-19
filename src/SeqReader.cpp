@@ -37,8 +37,6 @@ void Reader::Open(const char *filename) {
     if (gzfh_ != Z_NULL) {
         seq_ = kseq_init(gzfh_);
         good_ = true;
-    } else {
-        good_ = true;
     }
 }
 
