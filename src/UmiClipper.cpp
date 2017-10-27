@@ -38,10 +38,11 @@ UmiClipper::~UmiClipper() {
 
 bool UmiClipper::Clip() {
     std::string umi;
+    int numN = std::count_if(pattern_.cbegin(), pattern_.cend(), [](char c) { return c == 'N'; });
     int umi_start, umi_end, ist_start, ist_end;
     if (reader_base::Next()) {
         std::tie(umi_start, umi_end, ist_start, ist_end) = umi_base::IdentifyUmi(seq_->seq.s);
-        if (umi_start != umi_end) {
+        if (umi_start != umi_end && (umi_end - umi_start == numN)) {
             fprintf(outfh_, "@%s_"
                     "%.*s\n"
                     "%s\n"
