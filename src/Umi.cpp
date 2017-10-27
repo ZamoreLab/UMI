@@ -54,7 +54,7 @@ std::tuple<int, int, int, int> UmiByAlignment::IdentifyFivePrimeUmi(const char *
     #endif
     std::tuple<int, int, int, int> ret{0, 0, 0, 0};
 
-//    #define DEBUG
+//    #define DEBUG 1
     #ifdef DEBUG
     std::cerr << alignment << '\n'
               << score << '\n'
@@ -63,24 +63,30 @@ std::tuple<int, int, int, int> UmiByAlignment::IdentifyFivePrimeUmi(const char *
     #endif
     if (score<(MatchScore * strlen(adpt)) + (MaxMisMatchAllowed * MisMatchScore)) return ret;
 
-    int i = 0;
+    int i = 0, j = 0; // j is the iterator on the alignment; i is the iterator on the read
+    while (row(alignment, 0)[j] == '-') ++j; // skip the follow case
+    //       i=0
+    //    ---GTCCTGCTGGG---
+    //       j       |||
+    //    NNNNNNNNNNNGGG---
+
     //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
     //                                      |||||
     //        --------------------NNNNNNNNNNTACGA-----------------------
     //                            i
-    while (row(alignment, 1)[i] != 'N') ++i;
+    while (row(alignment, 1)[j] != 'N') ++i, ++j;
     std::get<0>(ret) = i;
     //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
     //                                      |||||
     //        --------------------NNNNNNNNNNTACGA-----------------------
     //                                      i
-    while (row(alignment, 1)[++i] == 'N');
-    std::get<1>(ret) = i--;
+    while (row(alignment, 1)[j] == 'N') ++i, ++j;
+    std::get<1>(ret) = i;
     //        AGTAGCTAGTTCGACATAGCTAGTACGAACTACGACATGACATAGCTAGTACGGACAT
     //                                      |||||
     //        --------------------NNNNNNNNNNTACGA-----------------------
     //                                           i
-    while (row(alignment, 1)[++i] != '-');
+    while (row(alignment, 1)[j] != '-') ++i, ++j;
     std::get<2>(ret) = i;
 
     std::get<3>(ret) = strlen(read);
@@ -109,7 +115,7 @@ std::tuple<int, int, int, int> UmiByAlignment::IdentifyThreePrimeUmi(const char 
     #endif
     std::tuple<int, int, int, int> ret{0, 0, 0, 0};
 
-//    #define DEBUG
+//    #define DEBUG 1
     #ifdef DEBUG
     std::cerr << alignment << '\n'
               << score << '\n'
